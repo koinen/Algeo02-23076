@@ -18,7 +18,7 @@ backend/.env/
 /coverage
 
 # next.js
-/.next/
+frontend/.next/
 /out/
 
 # production
@@ -27,6 +27,7 @@ backend/.env/
 # misc
 .DS_Store
 *.pem
+backend/__pycache__/
 
 # debug
 npm-debug.log*
