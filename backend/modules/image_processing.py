@@ -7,4 +7,4 @@ class ImageProcessing:
     def process_image(self, image):
         # Do some processing
         return np.array([1, 2, 3, 4])
-    
+
