@@ -14,7 +14,6 @@ class ImageProcessing:
     #         for j in range(len(image_array[0])):
     #             # Convert to greyscale
     #             greyscaledImageMatrix[i][j] = 0.2989 * image_array[i][j][0] + 0.5870 * image_array[i][j][1] + 0.1140 * image_array[i][j][2]
-
     #     return greyscaledImageMatrix
 
     # @staticmethod
@@ -81,6 +80,3 @@ class ImageProcessing:
                 flattened[i * height + j] = resized[i][j]
 
         return flattened
-    
-    
-    
