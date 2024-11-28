@@ -1,15 +1,9 @@
-import Image from "next/image";
 import Song from "../components/Song/Song";
 import {ButtonLight, ImageUploadButton} from "../components/Atom/Button";
 import Pagination from "../components/Pagination/Pagination";
 export default function HomePage() {
   return (
-    <main className="relative flex flex-col justify-end overflow-hidden">
-      <div className="bg-blue-500 h-screen inset-0 w-full">
-        <nav className="bg-red-400 p-5 flex flex-row items-center">
-          <Image src="/album/def.png" alt="Logo" width={50} height={50} />
-          <h1 className="ml-4">this is navbar</h1>
-        </nav>
+
         <div className="flex h-full w-full bg-black">
           <div className="w-[20%] bg-green-300 p-4">
             <div className="flex flex-col">
@@ -48,7 +42,5 @@ export default function HomePage() {
             </div>
           </div>
         </div>
-      </div>
-    </main>
   );
 }
