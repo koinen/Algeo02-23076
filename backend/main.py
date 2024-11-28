@@ -16,8 +16,8 @@ async def root():
         db.commit()
         
         # Optional: remove the test record
-        db.delete(test_record)
-        db.commit()
+        # db.delete(test_record)
+        # db.commit()
         
         return {"message": "Database connection successful"}
     except Exception as e:
