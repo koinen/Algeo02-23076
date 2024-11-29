@@ -32,8 +32,8 @@ export default function RootLayout({
       >
         <main className="relative flex flex-col justify-end overflow-hidden">
           <div className="bg-blue-500 h-screen inset-0 w-full">
-            <nav className="bg-red-400 p-5 flex flex-row items-center">
-              <NavBar></NavBar>
+            <nav className="p-5 flex flex-row items-center ml-10">
+                <NavBar></NavBar>
             </nav>
             {children}
           </div>

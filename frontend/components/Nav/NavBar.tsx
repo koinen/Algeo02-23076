@@ -4,7 +4,6 @@ import * as React from "react"
 import Link from "next/link"
 import Image from "next/image";
 
-
 import { cn } from "@/lib/utils"
 import {
   NavigationMenu,
@@ -16,50 +15,12 @@ import {
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu"
 
-const components: { title: string; href: string; description: string }[] = [
-  {
-    title: "Alert Dialog",
-    href: "/docs/primitives/alert-dialog",
-    description:
-      "A modal dialog that interrupts the user with important content and expects a response.",
-  },
-  {
-    title: "Hover Card",
-    href: "/docs/primitives/hover-card",
-    description:
-      "For sighted users to preview content available behind a link.",
-  },
-  {
-    title: "Progress",
-    href: "/docs/primitives/progress",
-    description:
-      "Displays an indicator showing the completion progress of a task, typically displayed as a progress bar.",
-  },
-  {
-    title: "Scroll-area",
-    href: "/docs/primitives/scroll-area",
-    description: "Visually or semantically separates content.",
-  },
-  {
-    title: "Tabs",
-    href: "/docs/primitives/tabs",
-    description:
-      "A set of layered sections of content—known as tab panels—that are displayed one at a time.",
-  },
-  {
-    title: "Tooltip",
-    href: "/docs/primitives/tooltip",
-    description:
-      "A popup that displays information related to an element when the element receives keyboard focus or the mouse hovers over it.",
-  },
-]
-
 export function NavBar() {
   return (
     <NavigationMenu>
       <NavigationMenuList>
         <NavigationMenuItem>
-          <NavigationMenuTrigger>START</NavigationMenuTrigger>
+          <NavigationMenuTrigger className="w-full">START</NavigationMenuTrigger>
           <NavigationMenuContent>
             <ul className="grid gap-3 p-4 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]">
               <li className="row-span-2">
@@ -84,29 +45,18 @@ export function NavBar() {
                 </NavigationMenuLink>
               </li>
               <ListItem href="/docs" title="HOW TO RUN">
-                Re-usable components built using Radix UI and Tailwind CSS.
+                Step by Step instruction for our feature.
               </ListItem>
-              <ListItem href="/docs/installation" title="GITHUB_REPO">
-                How to install dependencies and structure your app.
+              <ListItem href="https://github.com/koinen/Algeo02-23076" title="GITHUB_REPO">
+                CLick this to see our github repo.
               </ListItem>
             </ul>
           </NavigationMenuContent>
         </NavigationMenuItem>
         <NavigationMenuItem>
-          <NavigationMenuTrigger>Components</NavigationMenuTrigger>
-          <NavigationMenuContent>
-            <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px] ">
-              {components.map((component) => (
-                <ListItem
-                  key={component.title}
-                  title={component.title}
-                  href={component.href}
-                >
-                  {component.description}
-                </ListItem>
-              ))}
-            </ul>
-          </NavigationMenuContent>
+          <div className="">
+            -------------------
+          </div>
         </NavigationMenuItem>
         <NavigationMenuItem>
           <Link href="/dataset" legacyBehavior passHref>
@@ -132,7 +82,7 @@ const ListItem = React.forwardRef<
           className={cn(
             "block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground",
             className
-          )}
+          )} 
           {...props}
         >
           <div className="text-sm font-medium leading-none">{title}</div>

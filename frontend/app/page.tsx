@@ -1,32 +1,13 @@
 import Song from "../components/Song/Song";
-import {ButtonLight, ImageUploadButton} from "../components/Atom/Button";
 import Pagination from "../components/Pagination/Pagination";
+import Upload from "../components/Upload/Upload";
 export default function HomePage() {
   return (
 
         <div className="flex h-full w-full bg-black">
           <div className="w-[20%] bg-green-300 p-4">
             <div className="flex flex-col">
-              <div className="h-max-[25rem]">
-                <Song title="New Song" image="def.png"></Song>
-              </div>
-              <div className="flex h-max-[10rem] justify-center items-center">
-                <ImageUploadButton text="Upload"></ImageUploadButton>
-              </div>
-              <div className="flex h-max-[10rem] justify-center items-center mt-10">
-                <ButtonLight text="Audios"></ButtonLight>
-              </div>
-              <div className="flex h-max-[10rem] justify-center items-center mt-3">
-                <ButtonLight text="Pictures"></ButtonLight>
-              </div>
-              <div className="flex h-max-[10rem] justify-center items-center mt-3">
-                <ButtonLight text="Mapper"></ButtonLight>
-              </div>
-              <div className="flex flex-col h-[10rem] justify-center items-center mt-3">
-                <p>tes</p>
-                <p>tes</p>
-                <p>tes</p>
-              </div>
+              <Upload></Upload>
               <div className="flex justify-center items-center">
                 <Pagination></Pagination>
               </div>
