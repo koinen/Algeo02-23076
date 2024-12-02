@@ -1,131 +1,117 @@
 import numpy as np
-from typing import Tuple
+import math
+from typing import Tuple, List
+
+# ALLOWED NDARRAY PRIMITIVES : transpose, multiply
 
 class GeneralProcessing:
     def __init__(self):
         pass
 
-    def matrixCovariance(Matrix: np.ndarray) -> np.ndarray:
-        """
-        Calculate the covariance matrix of a given matrix.
-        """
-        covarianceMatrix: np.ndarray = np.cov(Matrix)
-        return covarianceMatrix
-    
-    def matrixFlatten(Matrix: np.ndarray) -> np.array:
-        """
-        Flatten a given matrix.
-        """
-        flatMatrix: np.array = Matrix.flatten()
+    @staticmethod
+    def multiplyMatrix(matrix1: np.ndarray, matrix2: np.ndarray) -> np.ndarray:
+        multMatrix: np.ndarray = np.zeros((matrix1.shape[0], matrix2.shape[1]))
+        for i in range(matrix1.shape[0]):
+            for j in range(matrix2.shape[1]):
+                for k in range(matrix1.shape[1]):
+                    multMatrix[i][j] += matrix1[i][k] * matrix2[k][j]
 
-        return flatMatrix
+        return multMatrix
 
+    @staticmethod
+    def transpose(matrix: np.ndarray) -> np.ndarray:
+        transposedMatrix: np.ndarray = np.zeros((matrix.shape[1], matrix.shape[0]))
+        for i in range(matrix.shape[0]):
+            for j in range(matrix.shape[1]):
+                transposedMatrix[j][i] = matrix[i][j]
+        return transposedMatrix
+
+    @staticmethod
+    def flattenMatrix(matrix: np.ndarray) -> np.ndarray:
+        len: int = matrix.shape[0] * matrix.shape[1]
+        flatArray: np.ndarray = np.zeros(len)
+        for i in range(matrix.shape[0]):
+            for j in range(matrix.shape[1]):
+                flatArray[i * matrix.shape[1] + j] = matrix[i][j]
+        return flatArray
     
-    def matrixMean(Matrix: np.ndarray) -> np.array:
-        """
-        Calculate the mean of a given matrix.
-        """
-        nData: int = Matrix.shape[0]
-        nFeatures: int = Matrix.shape[1]
+    @staticmethod
+    def meanMatrix(matrix: np.ndarray) -> np.ndarray:
+        nSamples: int = matrix.shape[0]
+        nFeatures: int = matrix.shape[1]
         meanMatrix: np.ndarray = np.zeros(nFeatures)
+        sum: float = 0
         for i in range(nFeatures):
-            meanFeature: float = 0
-            for j in range(nData):
-                meanFeature += Matrix[j][i]
-            meanFeature /= nData
-            meanMatrix[i] = meanFeature
+            for j in range(nSamples):
+                sum += matrix[j][i]
+            meanMatrix[i] = sum / nSamples
         return meanMatrix
     
-    def matrixStandard(Matrix: np.ndarray) -> np.ndarray:
-        """
-        Center a given matrix.
-        """
-        meanMatrix: np.ndarray = GeneralProcessing.matrixMean(Matrix)
-        centeredMatrix: np.ndarray = Matrix
-        nData: int = Matrix.shape[0]
-        nFeatures: int = Matrix.shape[1]
-        for i in range(nFeatures):
-            for j in range(nData):
-                centeredMatrix[j][i] -= meanMatrix[i]
-        
+    @staticmethod
+    def centerMatrix(matrix: np.ndarray) -> np.ndarray:
+        mean: np.ndarray = GeneralProcessing.meanMatrix(matrix)
+        centeredMatrix: np.ndarray = np.zeros(matrix.shape)
+        for i in range(matrix.shape[0]):
+            for j in range(matrix.shape[1]):
+                centeredMatrix[i][j] = matrix[i][j] - mean[j]
         return centeredMatrix
     
-    def arrayStandard(Array: np.array, meanMatrix: np.ndarray) -> np.array:
-        """
-        Center a given array.
-        """
-
-        meanArray: np.array = np.zeros(meanMatrix.shape[1])
-        for i in range(meanMatrix.shape[1]):
-            meanArray[i] = meanMatrix[0][i]
-        centeredArray: np.array = Array - meanArray
-        return centeredArray
+    @staticmethod
+    def covarianceMatrix(matrix: np.ndarray) -> np.ndarray:
+        nSamples: int = matrix.shape[0]
+        covMatrix: np.ndarray = 1/nSamples * GeneralProcessing.multiplyMatrix(GeneralProcessing.transpose(matrix), matrix)
+        return covMatrix
     
-    def euclideanDistance(Array1: np.array, Array2: np.array) -> float:
-        """
-        Calculate the euclidean distance between two arrays.
-        """
-        distance: float = 0
-        for i in range(Array1.shape[0]):
-            distance += (Array1[i] - Array2[i])**2
-        return np.sqrt(distance)
+    @staticmethod
+    def absVector(vector: np.ndarray) -> float:
+        sum: float = 0
+        for i in range(vector.shape[0]):
+            sum += vector[i] ** 2
+        return math.sqrt(sum)
     
-    def cosineSimilarity(Array1: np.array, Array2: np.array) -> float:
-        """
-        Calculate the cosine similarity between two arrays.
-        """
-        dotProduct: float = np.dot(Array1, Array2)
-        normArray1: float = np.linalg.norm(Array1)
-        normArray2: float = np.linalg.norm(Array2)
-        return dotProduct / (normArray1 * normArray2)
+    @staticmethod
+    def normalizeVector(vector: np.ndarray) -> np.ndarray:
+        abs: float = GeneralProcessing.absVector(vector)
+        return vector / abs
 
-
-    def SingularValueDecomposition(Matrix: np.ndarray) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
-        """
-        Calculate the singular value decomposition of a given matrix.
-        """
-        U, S, V = np.linalg.svd(Matrix)
-        return U, S, V
-
-    def mainComponent(Matrix: np.ndarray, nComponents: int) -> np.ndarray:
-        """
-        Calculate the main components of a given matrix.
-        """
-        U, S, V = GeneralProcessing.SingularValueDecomposition(Matrix)
-        mainComponents: np.ndarray = U[:, :nComponents]
-        return mainComponents
-
-    def matrixProjection(Matrix: np.array, mainComponents: np.ndarray) -> np.ndarray:
-        """
-        Project a given matrix into the main components.
-        """
-        projectionMatrix: np.ndarray = np.dot(Matrix, mainComponents)
-        return projectionMatrix
-
-    def arrayProjection(Array: np.array, mainComponents: np.ndarray) -> np.array:
-        """
-        Project a given array into the main components.
-        """
-        projectionArray: np.array = np.dot(Array, mainComponents)
-        return projectionArray
-
-    def principalComponentAnalysis(Matrix: np.ndarray, nComponents: int) -> np.ndarray:
-        """
-        Perform principal component analysis on a given matrix.
-        """
-        centeredMatrix: np.ndarray = GeneralProcessing.matrixStandard(Matrix)
-        mainComponents: np.ndarray = GeneralProcessing.mainComponent(centeredMatrix, nComponents)
-        return mainComponents
+    @staticmethod
+    def qrDecomposition(matrix: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
+        n: int = matrix.shape[0]
+        q: np.ndarray = np.zeros((n, n))
+        r: np.ndarray = np.zeros((n, n))
+        for j in range(n):
+            v: np.ndarray = matrix[:, j]
+            for i in range(j):
+                dot: int = np.dot(q[:, i], matrix[:, j])
+                v = v - dot * q[:, i]
+            q[:, j] = GeneralProcessing.normalizeVector(v)
+        r = GeneralProcessing.multiplyMatrix(GeneralProcessing.transpose(q), matrix)
+        return q, r
     
-    def arrayZScore(Array: np.array, meanMatrix: np.ndarray, stdMatrix: np.ndarray) -> np.array:
-        """
-        Calculate the Z-score of a given array.
-        """
-        zScoreArray: np.array = np.zeros(Array.shape[0])
-        for i in range(Array.shape[0]):
-            zScoreArray[i] = (Array[i] - meanMatrix[i]) / stdMatrix[i]
-        return zScoreArray
+    @staticmethod
+    def isUpperTriangular(matrix: np.ndarray) -> bool:
+        for i in range(matrix.shape[0]):
+            for j in range(i):
+                if abs(matrix[i][j]) > 1e-10:
+                    return False
+        return True
     
-
+    @staticmethod
+    def qrLoop(matrix: np.ndarray, nIter: int) -> np.ndarray:
+        q: np.ndarray = matrix
+        for i in range(nIter):
+            q, r = GeneralProcessing.qrDecomposition(q)
+            q = GeneralProcessing.multiplyMatrix(r, q)
+            if GeneralProcessing.isUpperTriangular(q):
+                break
+        return q
+    
+    @staticmethod
+    def eigenValues(matrix: np.ndarray, nIter: int) -> np.ndarray:
+        q: np.ndarray = GeneralProcessing.qrLoop(matrix, nIter)
+        eigenValues: np.ndarray = np.zeros(matrix.shape[0])
+        for i in range(matrix.shape[0]):
+            eigenValues[i] = q[i][i]
+        return eigenValues
 
     
