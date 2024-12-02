@@ -1,27 +1,36 @@
-import Song from "../components/Song/Song";
+"use client";
+import SongCards from "../components/Song/SongCards";
 import Pagination from "../components/Pagination/Pagination";
 import Upload from "../components/Upload/Upload";
-export default function HomePage() {
-  return (
+import { useState } from "react";
 
-        <div className="flex h-full w-full bg-black">
-          <div className="w-[20%] bg-green-300 p-4">
-            <div className="flex flex-col">
-              <Upload></Upload>
-              <div className="flex justify-center items-center">
-                <Pagination></Pagination>
-              </div>
-            </div>
+let totalItems = 36;
+const ITEMS_PER_PAGE = 12;
+
+export default function HomePage() {
+  const [currentPage, setCurrentPage] = useState(0);
+
+  return (
+    <div className="flex w-full bg-[#F3F3E0]">
+      <div className="w-[20%] h-[86.5vh] bg-[#608BC1] mt-3 ml-3">
+        <div className="flex flex-col">
+          <Upload></Upload>
+          <div className="flex justify-center items-center ">
+            <Pagination
+              totalItems={totalItems}
+              itemsPerPage={ITEMS_PER_PAGE}
+              currentPage={currentPage}
+              setCurrentPage={setCurrentPage}
+            ></Pagination>
           </div>
-          <div className="w-[80%] bg-yellow-300">
-            <div className="grid grid-cols-4 grid-rows-3 gap-5">
-              {Array.from({ length: 12 }).map((_, index) => (
-                <div key={index} className="bg-white shadow-md">
-                  <Song title={`Song ${index + 1}`} image="def.png"></Song>
-                </div>
-              ))}
-            </div>
-          </div>
+          <span className="text-center bg-[#F3F3E0]">Current Page: {currentPage + 1}</span>
         </div>
+      </div>
+      <SongCards
+        totalItems={totalItems}
+        itemsPerPage={ITEMS_PER_PAGE}
+        currentPage={currentPage}
+      />
+    </div>
   );
 }

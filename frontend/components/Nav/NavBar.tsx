@@ -17,6 +17,8 @@ import {
 
 export function NavBar() {
   return (
+    <div className="flex flex-row gap-7">
+      <Image src={"/album/def.png"} alt="tes" width={100} height={100}></Image>
     <NavigationMenu>
       <NavigationMenuList>
         <NavigationMenuItem>
@@ -55,7 +57,7 @@ export function NavBar() {
         </NavigationMenuItem>
         <NavigationMenuItem>
           <div className="">
-            -------------------
+            -----
           </div>
         </NavigationMenuItem>
         <NavigationMenuItem>
@@ -67,6 +69,7 @@ export function NavBar() {
         </NavigationMenuItem>
       </NavigationMenuList>
     </NavigationMenu>
+    </div>
   )
 }
 

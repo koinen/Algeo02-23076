@@ -31,8 +31,8 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <main className="relative flex flex-col justify-end overflow-hidden">
-          <div className="bg-blue-500 h-screen inset-0 w-full">
-            <nav className="p-5 flex flex-row items-center ml-10">
+          <div className="bg-[#F3F3E0] h-screen inset-0 w-full">
+            <nav className="pl-10 py-5 flex flex-row items-center bg-[#133E87]">
                 <NavBar></NavBar>
             </nav>
             {children}

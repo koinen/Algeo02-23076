@@ -16,9 +16,8 @@ const Song: React.FC<SongProps> = ({ title, image }) => {
 
   return (
     <Card className="p-4 h-fit bg-inherit">
-
       <CardContent className="flex flex-col justify-center items-center">
-        <Image className="border-4 border-solid border-black" src={imagePath} alt={title} width={300} height={400}></Image>
+        <Image className="border-4 border-solid border-black" src={imagePath} alt={title} width={283} height={100}></Image>
         <CardTitle className="border-4 border-solid border-black w-full">{title}</CardTitle>
       </CardContent>
     </Card>
