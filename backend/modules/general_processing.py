@@ -1,6 +1,7 @@
 import numpy as np
 import math
 from typing import Tuple, List
+from eigenvektor import calcEigenVector
 
 # ALLOWED NDARRAY PRIMITIVES : transpose, multiply
 
@@ -92,7 +93,7 @@ class GeneralProcessing:
     def isUpperTriangular(matrix: np.ndarray) -> bool:
         for i in range(matrix.shape[0]):
             for j in range(i):
-                if abs(matrix[i][j]) > 1e-10:
+                if abs(matrix[i][j]) > 1e-10: #tolerance, basically 0
                     return False
         return True
     
@@ -112,6 +113,32 @@ class GeneralProcessing:
         eigenValues: np.ndarray = np.zeros(matrix.shape[0])
         for i in range(matrix.shape[0]):
             eigenValues[i] = q[i][i]
+        
+        eigenValues = np.sort(eigenValues)[::-1]
+        
         return eigenValues
+    
+    @staticmethod
+    def eigenSpace(eigenValues: np.ndarray, matrix: np.ndarray) -> np.ndarray:
+        eigenSpace: List[np.ndarray] = []
+        for i in range(eigenValues.shape[0]):
+            eigenVector: np.ndarray = calcEigenVector(matrix, eigenValues[i])
+            eigenSpace.append(eigenVector)
+        eigenSpace = np.array(eigenSpace)
+        eigenSpace = GeneralProcessing.transpose(eigenSpace)
+        return eigenSpace
+    
+    @staticmethod
+    def projectMatrix(matrix: np.ndarray, eigenSpace: np.ndarray, kval: int) -> np.ndarray:
+        simplifiedEigenSpace: np.ndarray = eigenSpace[:, :kval]
+        projectedMatrix: np.ndarray = GeneralProcessing.multiplyMatrix(matrix, simplifiedEigenSpace)
+        return projectedMatrix
+    
+    @staticmethod
+    def euclideanDistance(vector1: np.ndarray, vector2: np.ndarray) -> float:
+        sum: float = 0
+        for i in range(vector1.shape[0]):
+            sum += (vector1[i] - vector2[i]) ** 2
+        return math.sqrt(sum)
 
     
