@@ -6,7 +6,7 @@ class ImageProcessing:
         pass
 
     @staticmethod
-    def convertImageToMatrix(image: Image.Image) -> np.ndarray:
+    def __convertImageToMatrix(image: Image.Image) -> np.ndarray:
         """
         Convert an image to a 3D matrix (RGB).
         """
@@ -15,7 +15,7 @@ class ImageProcessing:
         return imageMatrix
     
     @staticmethod
-    def greyscale(imageMatrix: np.ndarray) -> np.ndarray:
+    def __greyscale(imageMatrix: np.ndarray) -> np.ndarray:
         # Convert the image to greyscale
         greyscaledImageMatrix : np.ndarray = np.zeros((len(imageMatrix), len(imageMatrix[0])), dtype=int)
         for i in range(len(imageMatrix)):
@@ -33,23 +33,22 @@ class ImageProcessing:
     
     @staticmethod
     def __getCoef(surroundings: np.ndarray) -> np.ndarray:
-        bicubicMatrix : np.ndarray = np.array([[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                                  [1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                                  [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0],
-                                  [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-                                  [0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                                  [0, 1, 2, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                                  [0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0],
-                                  [0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3],
-                                  [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                                  [0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0],
-                                  [0, 0, 0, 0, 1, 0, 0, 0, 2, 0, 0, 0, 3, 0, 0, 0],
-                                  [0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3],
-                                  [0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                                  [0, 0, 0, 0, 0, 1, 2, 3, 0, 0, 0, 0, 0, 0, 0, 0],
-                                  [0, 0, 0, 0, 0, 1, 0, 0, 0, 2, 0, 0, 0, 3, 0, 0],
-                                  [0, 0, 0, 0, 0, 1, 2, 3, 0, 2, 4, 6, 0, 3, 6, 9]])
-        
+        bicubicMatrix : np.ndarray = np.array( [[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                                                [1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                                                [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0],
+                                                [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+                                                [0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                                                [0, 1, 2, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                                                [0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0],
+                                                [0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3],
+                                                [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                                                [0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0],
+                                                [0, 0, 0, 0, 1, 0, 0, 0, 2, 0, 0, 0, 3, 0, 0, 0],
+                                                [0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3],
+                                                [0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                                                [0, 0, 0, 0, 0, 1, 2, 3, 0, 0, 0, 0, 0, 0, 0, 0],
+                                                [0, 0, 0, 0, 0, 1, 0, 0, 0, 2, 0, 0, 0, 3, 0, 0],
+                                                [0, 0, 0, 0, 0, 1, 2, 3, 0, 2, 4, 6, 0, 3, 6, 9]])
         invertedBicubicMatrix : np.ndarray = np.linalg.inv(bicubicMatrix)
         coef : np.ndarray = np.dot(invertedBicubicMatrix, surroundings)
         return coef
@@ -88,7 +87,7 @@ class ImageProcessing:
         return D
 
     @staticmethod
-    def resize(greyscaledImageMatrix: np.ndarray) -> np.ndarray:
+    def __resize(greyscaledImageMatrix: np.ndarray) -> np.ndarray:
         """
         Resize the image using bicubic interpolation.
         """
@@ -122,7 +121,7 @@ class ImageProcessing:
         return resized.astype(np.uint8)
 
     @staticmethod
-    def flatten(resized : np.ndarray) -> np.ndarray:
+    def __flatten(resized : np.ndarray) -> np.ndarray:
         """
         Flatten the resized image to a vector (1D Matrix).
         """
@@ -134,3 +133,16 @@ class ImageProcessing:
                 flattened[i * height + j] = resized[i][j]
 
         return flattened
+    
+    @staticmethod
+    def makeImage(image: Image.Image) -> Image.Image:
+        res : np.ndarray = ImageProcessing.__resize(ImageProcessing.__greyscale(ImageProcessing.__convertImageToMatrix(image)))
+        return Image.fromarray(res)
+
+    @staticmethod
+    def processImage(image: Image.Image) -> np.ndarray:
+        """
+        Process the image to a 1D matrix.
+        """
+        res : np.ndarray = ImageProcessing.__flatten(ImageProcessing.__resize(ImageProcessing.__greyscale(ImageProcessing.__convertImageToMatrix(image))))
+        return res
