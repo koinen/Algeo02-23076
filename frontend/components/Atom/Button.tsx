@@ -1,15 +1,17 @@
-import { Button } from "@/components/ui/button"
+"use client";
+
+import { Button } from "@/components/ui/button";
 
 interface ButtonProps {
-    text: string;
+  text: string;
 }
 
 const ButtonLight: React.FC<ButtonProps> = ({ text }) => {
-    return (
-        <Button variant="outline">
-            <p className="p-7">{text}</p>
-        </Button>
-    );
-}
+  return (
+    <Button variant="outline">
+      <p className="p-7">{text}</p>
+    </Button>
+  );
+};
 
 export default ButtonLight;
