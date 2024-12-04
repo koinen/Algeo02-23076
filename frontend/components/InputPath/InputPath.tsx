@@ -1,5 +1,6 @@
 "use client";
 import React, { useState } from "react";
+import axios from "axios";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -27,14 +28,16 @@ const InputPath: React.FC = () => {
     setLoading(true); // Set loading state to true
 
     try {
-      // Simulate an async operation (e.g., API call)
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-      alert(`Path submitted successfully: ${path}`);
+      const response = await axios.post(
+        "http://127.0.0.1:8000/upload_dataset/",
+        { path }
+      );
+      alert(`Path submitted successfully: ${response.data.message}`);
     } catch (error) {
-      alert(`Failed to submit path`);
+      alert(`Failed to submit path : ${path}`);
       console.error(error);
     } finally {
-      setLoading(false); // Set loading state to false after the operation
+      setLoading(false);
     }
   };
 

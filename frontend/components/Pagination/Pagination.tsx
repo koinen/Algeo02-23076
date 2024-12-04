@@ -21,7 +21,11 @@ const Pagination: React.FC<PaginationProps> = ({
   currentPage,
   setCurrentPage,
 }) => {
-  const totalPages = Math.ceil(totalItems / itemsPerPage);
+  let totalPages = Math.ceil(totalItems / itemsPerPage);
+
+  if (totalPages === 0) {
+    totalPages = 1;
+  }
 
   const handleNext = () => {
     if (currentPage < totalPages - 1) {
@@ -55,12 +59,12 @@ const Pagination: React.FC<PaginationProps> = ({
           </CarouselItem>
         ))}
       </CarouselContent>
-      <button onClick={handlePrevious}>
+      <div onClick={handlePrevious}>
         <CarouselPrevious />
-      </button>
-      <button onClick={handleNext}>
+      </div>
+      <div onClick={handleNext}>
         <CarouselNext />
-      </button>
+      </div>
     </Carousel>
   );
 };
