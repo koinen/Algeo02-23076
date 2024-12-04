@@ -5,6 +5,7 @@ import Pagination from "../components/Pagination/Pagination";
 import SongCards from "../components/Song/SongCards";
 import Upload from "../components/Upload/Upload";
 import { Button } from "@/components/ui/button";
+import Humming from "@/components/Humming/Humming";
 
 interface SongItem {
   title: string;
@@ -59,7 +60,7 @@ export default function HomePage() {
         <div className="w-[20%] bg-[#608BC1]">
           <div className="flex flex-col">
             <Upload />
-            <div className="flex justify-center items-center">
+            <div className="flex justify-center items-center h-[15vh]">
               <Pagination
                 totalItems={totalItems}
                 itemsPerPage={ITEMS_PER_PAGE}
@@ -74,6 +75,7 @@ export default function HomePage() {
             <Button variant="outline" onClick={handleTestClick}>
               Click This to Test
             </Button>
+            <Humming/>
           </div>
         </div>
         <SongCards

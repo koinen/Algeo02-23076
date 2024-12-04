@@ -85,7 +85,7 @@ const Upload: React.FC = () => {
   };
 
   return (
-    <div className="bg-[#133E87] m-10 rounded-xl p-5">
+    <div className="bg-[#133E87] mx-10 mt-5 rounded-xl p-5">
       <UploadButton
         text="Song"
         setImage={setImage}
@@ -100,8 +100,8 @@ const Upload: React.FC = () => {
         onClick={() => setPath("image")} // Set path for Image
       />
       {image && (
-        <div style={{ marginTop: "20px" }} className="">
-          <p className="bg-[#F3F3E0]">Preview:</p>
+        <div style={{ marginTop: "20px" }} className="bg-[#F3F3E0] max-h-[20vh] overflow-scroll">
+          <p>Preview:</p>
           <img
             src={image}
             alt="preview"

@@ -49,7 +49,7 @@ const Pagination: React.FC<PaginationProps> = ({
               index === currentPage ? "active" : ""
             }`}
           >
-            <div className="p-10">
+            <div className="p-[70px]">
               <Card>
                 <CardContent className="flex aspect-square items-center justify-center p-2">
                   <span className="text-2xl font-semibold">{index + 1}</span>
