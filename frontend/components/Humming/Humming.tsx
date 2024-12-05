@@ -10,26 +10,37 @@ const Humming: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
+  const mediaStreamRef = useRef<MediaStream | null>(null);
 
   const startRecording = async () => {
-    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    mediaRecorderRef.current = new MediaRecorder(stream);
-    mediaRecorderRef.current.ondataavailable = (event) => {
-      audioChunksRef.current.push(event.data);
-    };
-    mediaRecorderRef.current.onstop = () => {
-      const audioBlob = new Blob(audioChunksRef.current, { type: "audio/wav" });
-      const audioUrl = URL.createObjectURL(audioBlob);
-      setAudioURL(audioUrl);
-      setAudioBlob(audioBlob);
-      audioChunksRef.current = [];
-    };
-    mediaRecorderRef.current.start();
-    setIsRecording(true);
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      mediaStreamRef.current = stream;
+      mediaRecorderRef.current = new MediaRecorder(stream);
+      mediaRecorderRef.current.ondataavailable = (event) => {
+        audioChunksRef.current.push(event.data);
+      };
+      mediaRecorderRef.current.onstop = () => {
+        const audioBlob = new Blob(audioChunksRef.current, { type: "audio/wav" });
+        const audioUrl = URL.createObjectURL(audioBlob);
+        setAudioURL(audioUrl);
+        setAudioBlob(audioBlob);
+        audioChunksRef.current = [];
+      };
+      mediaRecorderRef.current.start();
+      setIsRecording(true);
+    } catch (error) {
+      if (error instanceof Error && error.name === "NotAllowedError") {
+        alert("Microphone access denied. Please allow microphone access to record audio.");
+      } else {
+        console.error("Error accessing microphone:", error);
+      }
+    }
   };
 
   const stopRecording = () => {
     mediaRecorderRef.current?.stop();
+    mediaStreamRef.current?.getTracks().forEach((track) => track.stop());
     setIsRecording(false);
   };
 
