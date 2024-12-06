@@ -1,5 +1,6 @@
-"use client"
+"use client";
 import React, { useState } from "react";
+import axios from "axios";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -10,41 +11,45 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { ButtonLoading } from "../Atom/Button";
 
-export function InputPath() {
+const InputPath: React.FC = () => {
   const [path, setPath] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!path) {
+      alert("Please enter a path.");
+      return;
+    }
+
+    setLoading(true); // Set loading state to true
 
     try {
-      const response = await fetch("http://localhost:8000/upload_dataset/", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ path }),
-      });
-
-      if (response.ok) {
-        alert("Dataset path submitted successfully!");
-      } else {
-        const errorData = await response.json();
-        alert(`Error: ${errorData.message}`);
-      }
+      const response = await axios.post(
+        "http://127.0.0.1:8000/upload_dataset/",
+        { path }
+      );
+      alert(`Path submitted successfully: ${response.data.message}`);
     } catch (error) {
-      console.error("Error submitting dataset path:", error);
-      alert("Failed to submit the dataset path.");
+      alert(`Failed to submit path : ${path}`);
+      console.error(error);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <Card className="w-[50%] h-[50vh] bg-gray-200">
+    <Card className="w-[50%] h-[50vh] mb-40 bg-gray-200">
       <CardHeader>
         <CardTitle>
           <p className="text-6xl">Set Your Data Set</p>
         </CardTitle>
-        <CardDescription>Enter the absolute path to your folder</CardDescription>
+        <CardDescription>
+          Enter the absolute path to your folder
+        </CardDescription>
       </CardHeader>
       <CardContent className="h-[60%]">
         <form onSubmit={handleSubmit}>
@@ -60,13 +65,26 @@ export function InputPath() {
             </div>
           </div>
           <CardFooter className="flex justify-between mt-[20vh]">
-            <Button variant="outline" type="button">
+            <Button
+              variant="outline"
+              type="button"
+              disabled={!path}
+              onClick={() => setPath("")}
+            >
               Cancel
             </Button>
-            <Button type="submit">Submit</Button>
+            {loading ? (
+              <ButtonLoading />
+            ) : (
+              <Button variant="outline" type="submit" disabled={!path}>
+                Submit
+              </Button>
+            )}
           </CardFooter>
         </form>
       </CardContent>
     </Card>
   );
-}
+};
+
+export default InputPath;

@@ -2,6 +2,7 @@
 import { useState } from "react";
 import axios from "axios";
 import { Button } from "@/components/ui/button";
+import { ButtonLoading } from "../Atom/Button";
 
 interface ButtonProps {
   setImage: (image: string | null) => void;
@@ -25,7 +26,7 @@ const UploadButton: React.FC<ButtonProps> = ({
   };
 
   return (
-    <div style={{ textAlign: "center", marginTop: "20px" }}>
+    <div style={{ textAlign: "center" }}>
       <Button variant="outline" onClick={onClick}>
         <label
           htmlFor={`upload-button-${text}`}
@@ -49,6 +50,7 @@ const Upload: React.FC = () => {
   const [image, setImage] = useState<string | null>(null);
   const [file, setFile] = useState<File | null>(null); // Store file object for saving
   const [path, setPath] = useState<string>(""); // Store the current path
+  const [loading, setLoading] = useState<boolean>(false); // Manage loading state
 
   // Handle Save button click
   const handleSave = async () => {
@@ -56,6 +58,8 @@ const Upload: React.FC = () => {
       alert("Please upload an image first.");
       return;
     }
+
+    setLoading(true); // Set loading state to true
 
     // Use FormData to send file data to the server
     const formData = new FormData();
@@ -75,17 +79,20 @@ const Upload: React.FC = () => {
     } catch (error) {
       alert(`File ${path} failed to upload`);
       console.error(error);
+    } finally {
+      setLoading(false); // Set loading state to false after the operation
     }
   };
 
   return (
-    <div>
+    <div className="bg-[#133E87] mx-10 mt-5 rounded-xl p-5">
       <UploadButton
         text="Song"
         setImage={setImage}
         setFile={setFile}
         onClick={() => setPath("song")} // Set path for Song
       />
+      <br />
       <UploadButton
         text="Image"
         setImage={setImage}
@@ -93,7 +100,7 @@ const Upload: React.FC = () => {
         onClick={() => setPath("image")} // Set path for Image
       />
       {image && (
-        <div style={{ marginTop: "20px" }}>
+        <div style={{ marginTop: "20px" }} className="bg-[#F3F3E0] max-h-[20vh] overflow-scroll">
           <p>Preview:</p>
           <img
             src={image}
@@ -106,14 +113,29 @@ const Upload: React.FC = () => {
           />
         </div>
       )}
-
-      <div className="flex justify-center items-center">
+      <br />
+      <div className="flex justify-center items-center gap-6">
+        {loading ? (
+          <ButtonLoading />
+        ) : (
+          <Button
+            variant="outline"
+            onClick={handleSave}
+            disabled={!file}
+          >
+            Save
+          </Button>
+        )}
         <Button
           variant="outline"
-          onClick={handleSave}
-          style={{ marginTop: "10px" }}
+          onClick={() => {
+            setImage(null);
+            setFile(null);
+            setPath("");
+          }}
+          disabled={!file}
         >
-          Save
+          Cancel
         </Button>
       </div>
     </div>
