@@ -24,32 +24,13 @@ def ziptoDataset(path: str) -> np.ndarray:
     dataset: np.ndarray = np.array(image_list)
     return dataset
 
-def principalComponent(dataset: np.ndarray, kval: int) -> np.ndarray:
-    if kval == -1:
-        kval = dataset.shape[1]
-    centeredMatrix: np.ndarray = GeneralProcessing.centerMatrix(dataset)
-    covMatrix: np.ndarray = GeneralProcessing.covarianceMatrix(centeredMatrix)
-    eigenValues: np.ndarray = GeneralProcessing.eigenValues(covMatrix, 100)
-    eigenSpace: np.ndarray = GeneralProcessing.eigenSpace(eigenValues, covMatrix)
-    return eigenSpace[:, :kval]
-
-def projectedDataset(imageMatrix: np.ndarray, kval: int) -> np.ndarray:
-    if kval == -1:
-        kval = imageMatrix.shape[1]
-    eigenSpace: np.ndarray = principalComponent(imageMatrix, kval)
-    projectedImages = []
-    for i in range(imageMatrix.shape[0]):
-        projectedImage: np.ndarray = GeneralProcessing.projectMatrix(imageMatrix[i], eigenSpace, kval)
-        projectedImages.append(projectedImage)
-    return np.array(projectedImages)
-
 def queryImage(image: Image, dataset: np.ndarray, projectedDataset: np.ndarray, kval: int) -> np.ndarray:
     if kval == -1:
         kval = dataset.shape[1]
     imageMatrix: np.ndarray = ImageProcessing.processImage(image)
     meanDataset: np.ndarray = GeneralProcessing.meanMatrix(dataset) #an array of means
     centeredImage: np.ndarray = imageMatrix - meanDataset
-    principalComponents: np.ndarray = principalComponent(dataset, kval)
+    principalComponents: np.ndarray = GeneralProcessing.principalComponent(dataset, kval)
     projectedImage: np.ndarray = GeneralProcessing.projectMatrix(centeredImage, principalComponents, kval)
     top: int = 5
     closest = []

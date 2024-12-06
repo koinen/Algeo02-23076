@@ -1,5 +1,6 @@
 import pretty_midi
 import numpy as np
+from atb import histograms
 from general_processing import GeneralProcessing
 from typing import List
 
@@ -13,7 +14,7 @@ class MidiProcessing:
 
     @staticmethod
     #TAKES FIRST CHANNEL ONLY, only takes start, end, pitch
-    def midiToMatrix(midi : pretty_midi.PrettyMIDI, bpm: int) -> np.ndarray:
+    def midiToMatrix(midi : pretty_midi.PrettyMIDI) -> np.ndarray:
         matrixSong: List[List[float]] = []
         #takes first channel
         channel = midi.instruments[0]
@@ -23,6 +24,25 @@ class MidiProcessing:
 
         res: np.ndarray = np.array(matrixSong)
         return res
+    
+    # normalize tempo and pitch, use min max normalization
+    @staticmethod    
+    def normalizePitch(midi: pretty_midi.PrettyMIDI) -> pretty_midi.PrettyMIDI:
+        min_pitch = float('inf')
+        max_pitch = float('-inf')
+        
+        for instrument in midi.instruments:
+            for note in instrument.notes:
+                if note.pitch < min_pitch:
+                    min_pitch = note.pitch
+                if note.pitch > max_pitch:
+                    max_pitch = note.pitch
+        
+        for instrument in midi.instruments:
+            for note in instrument.notes:
+                note.pitch = (note.pitch - min_pitch) / (max_pitch - min_pitch)
+        
+        return midi
         
     @staticmethod
     # window 20 beat, slide 4 beat
@@ -52,9 +72,34 @@ class MidiProcessing:
             time += 4 * timeDelay
         return windowedMatrix
 
+    @staticmethod
+    def pitchVector(windowedMatrix: np.ndarray) -> np.ndarray:
+        pitchVector: List[int] = []
+        for window in windowedMatrix:
+            pitchVector.append(window[:, 2])
+        pitchVector = np.array(pitchVector)
+        return pitchVector
+    
+    @staticmethod
+    def toneTransitionVector(pitchVector: np.ndarray) -> np.ndarray:
+        toneTransitionVector: List[int] = []
+        for pitch in pitchVector:
+            toneTransitionVector.append(np.diff(pitch))
+        toneTransitionVector = np.array(toneTransitionVector)
+        return toneTransitionVector
+    
+    @staticmethod
+    def processMidi(midi: pretty_midi.PrettyMIDI, bpm: int) -> np.ndarray:
+        processedMidi: np.ndarray = MidiProcessing.midiToMatrix(midi)
+        processedMidi = MidiProcessing.normalizePitch(processedMidi)
+        windowedMatrix: List[np.ndarray] = MidiProcessing.windowingMatrix(processedMidi, bpm)
+        resultMatrix: List[np.ndarray] = []
+        for window in windowedMatrix:
+            pitchVector: np.ndarray = MidiProcessing.pitchVector(window)
+            toneTransitionVector: np.ndarray = MidiProcessing.toneTransitionVector(pitchVector)
+            histogramsResult = histograms(pitchVector)
+            resultMatrix.append(np.concatenate((toneTransitionVector, histogramsResult["ATB"], histogramsResult["RTB"], histogramsResult["FTB"])))
+        return np.array(resultMatrix)
+        
         
     
-midi = pretty_midi.PrettyMIDI("./backend/modules/MIDI_sample.mid")
-matrix = MidiProcessing.midiToMatrix(midi, 120)
-windowed = MidiProcessing.windowingMatrix(matrix, 120)
-print(windowed)

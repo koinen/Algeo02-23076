@@ -140,5 +140,34 @@ class GeneralProcessing:
         for i in range(vector1.shape[0]):
             sum += (vector1[i] - vector2[i]) ** 2
         return math.sqrt(sum)
+    
+    @staticmethod
+    def cosineSimilarity(vector1: np.ndarray, vector2: np.ndarray) -> float:
+        dot: float = np.dot(vector1, vector2)
+        abs1: float = GeneralProcessing.absVector(vector1)
+        abs2: float = GeneralProcessing.absVector(vector2)
+        return dot / (abs1 * abs2)
+    
+    @staticmethod
+    def principalComponent(dataset: np.ndarray, kval: int) -> np.ndarray:
+        if kval == -1:
+            kval = dataset.shape[1]
+        centeredMatrix: np.ndarray = GeneralProcessing.centerMatrix(dataset)
+        covMatrix: np.ndarray = GeneralProcessing.covarianceMatrix(centeredMatrix)
+        eigenValues: np.ndarray = GeneralProcessing.eigenValues(covMatrix, 100)
+        eigenSpace: np.ndarray = GeneralProcessing.eigenSpace(eigenValues, covMatrix)
+        return eigenSpace[:, :kval]
+        
+
+    @staticmethod
+    def projectedDataset(dataset: np.ndarray, kval: int) -> np.ndarray:
+        if kval == -1:
+            kval = dataset.shape[1]
+        eigenSpace: np.ndarray = GeneralProcessing.principalComponent(dataset, kval)
+        projectedDataset = []
+        for i in range(dataset.shape[0]):
+            projectedData: np.ndarray = GeneralProcessing.projectMatrix(dataset[i], eigenSpace, kval)
+            projectedDataset.append(projectedData)
+        return np.array(projectedDataset)
 
     
