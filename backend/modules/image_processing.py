@@ -146,3 +146,10 @@ class ImageProcessing:
         """
         res : np.ndarray = ImageProcessing.__flatten(ImageProcessing.__resize(ImageProcessing.__greyscale(ImageProcessing.__convertImageToMatrix(image))))
         return res
+    
+    @staticmethod
+    def euclideanDistance(image1: np.ndarray, image2: np.ndarray) -> float:
+        """
+        Calculate the Euclidean distance between two images.
+        """
+        return np.linalg.norm(image1 - image2)
