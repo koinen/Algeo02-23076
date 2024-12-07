@@ -1,7 +1,7 @@
 import pretty_midi
 import numpy as np
-from atb import histograms
-from general_processing import GeneralProcessing
+from .atb import histograms
+from .general_processing import GeneralProcessing
 from typing import List
 
 # Note: start, end, pitch, velocity

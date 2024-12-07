@@ -1,5 +1,5 @@
-from audio_processing import MidiProcessing
-from general_processing import GeneralProcessing
+from .audio_processing import MidiProcessing
+from .general_processing import GeneralProcessing
 import numpy as np
 import pretty_midi
 

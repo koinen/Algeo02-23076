@@ -32,11 +32,11 @@ def histograms(inputPitch: np.ndarray) -> Dict[str, np.ndarray]:
         "FTB": ftb
     }
 
+if __name__ == "__main__":
+    # Test Case Placeholder
+    inputPitch = np.random.rand(20)  # Array pitch, panjang 20 [0...1]
+    res = histograms(inputPitch)
 
-# Test Case Placeholder
-inputPitch = np.random.rand(20)  # Array pitch, panjang 20 [0...1]
-res = histograms(inputPitch)
-
-print("ATB:\n", res["ATB"])
-print("RTB:\n", res["RTB"])
-print("FTB:\n", res["FTB"])
+    print("ATB:\n", res["ATB"])
+    print("RTB:\n", res["RTB"])
+    print("FTB:\n", res["FTB"])

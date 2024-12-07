@@ -1,5 +1,5 @@
-from image_processing import ImageProcessing
-from general_processing import GeneralProcessing
+from .image_processing import ImageProcessing
+from .general_processing import GeneralProcessing
 import zipfile
 from PIL import Image
 import os

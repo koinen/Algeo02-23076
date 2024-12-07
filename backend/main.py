@@ -8,6 +8,7 @@ import zipfile
 import os
 import shutil
 from modules.image_processing import *
+from modules.audio_processing import *
 from models import TestConnection  # Assuming you have this model
 from typing import Optional
 
@@ -24,8 +25,8 @@ async def root():
         db.commit()
         
         # Optional: remove the test record
-        # db.delete(test_record)
-        # db.commit()
+        db.delete(test_record)
+        db.commit()
         
         return {"message": "Database connection successful"}
     except Exception as e:
@@ -86,8 +87,12 @@ async def upload_dataset(path: str):
                 image_file_names.append(entry.name)
                 print(f"Processed image {entry.name}")
             # check if the entry is an audio file
-            elif entry.is_file() and entry.name.lower().endswith(('.wav', '.mp3', '.midi')):
-                continue 
+            elif entry.is_file() and entry.name.lower().endswith(('.mid')):
+                # process the audio file to a vector
+                audio_vector = MidiProcessing.processMidi(entry.path)
+                audio_data_center.append(audio_vector)
+                audio_file_names.append(entry.name)
+                print(f"Processed audio {entry.name}")
             # try:
             #     shutil.copy(entry.path, os.path.join(save_path, entry.name))
             # except Exception as e:
@@ -96,12 +101,12 @@ async def upload_dataset(path: str):
         
         # save the image data to the save path
         np.save(os.path.join(save_path, "image_data.npy"), np.array(image_data_center))
-        # np.save(os.path.join(save_path, "audio_data.npy"), np.array(audio_data_center))
+        np.save(os.path.join(save_path, "audio_data.npy"), np.array(audio_data_center))
         with open(os.path.join(save_path, "image_file_names.txt"), "w") as f:
             f.write("\n".join(image_file_names))
-        # with open(os.path.join(save_path, "audio_file_names.txt"), "w") as f:
-        #     f.write("\n".join(audio_file_names))
-        return {"message": f"Dataset successfully extracted to {extract_path}"}
+        with open(os.path.join(save_path, "audio_file_names.txt"), "w") as f:
+            f.write("\n".join(audio_file_names))
+        return {"message": f"Dataset successfully extracted to {save_path}"}
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 # @app.post("upload_song")

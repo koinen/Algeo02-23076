@@ -1,7 +1,7 @@
 import numpy as np
 import math
 from typing import Tuple, List
-from eigenvektor import calcEigenVector
+from .eigenvektor import calcEigenVector
 
 # ALLOWED NDARRAY PRIMITIVES : transpose, multiply
 
