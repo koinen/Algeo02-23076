@@ -58,6 +58,29 @@ async def upload_image(file: UploadFile = File(...)):
     
     return {"filename": file.filename, "path": file_path}
 
+@app.post("/upload_song")
+async def upload_song(file: UploadFile = File(...)):
+    # Validate file type (optional)
+    allowed_types = ['audio/mid']
+    if file.content_type not in allowed_types:
+        raise HTTPException(status_code=400, detail="Invalid file type")
+    print(file.content_type)
+    # Create directory if it doesn't exist
+    os.makedirs("uploads/audio", exist_ok=True)
+    
+    # Generate a unique filename
+    file_path = os.path.join("uploads/audio", "uploaded_song.mid")
+    
+    # Save the file
+    try:
+        with open(file_path, "wb") as buffer:
+            contents = await file.read()
+            buffer.write(contents)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error saving file: {str(e)}")
+    
+    return {"filename": file.filename, "path": file_path}
+
 @app.post("/upload_dataset")
 async def upload_dataset(path: str):
     try:
@@ -109,7 +132,6 @@ async def upload_dataset(path: str):
         return {"message": f"Dataset successfully extracted to {save_path}"}
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
-# @app.post("upload_song")
 
 # Alternatively, if you want to create tables on startup
 @app.on_event("startup")
