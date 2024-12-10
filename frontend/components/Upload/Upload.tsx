@@ -67,18 +67,20 @@ const Upload: React.FC = () => {
 
     try {
       const response = await axios.post<{ path: string }>(
-        `http://127.0.0.1:8000/upload_${path}/`,
+        `http://127.0.0.1:8000/upload_${path}`,
         formData,
         {
           headers: {
-            "Content-Type": "multipart/form-data",
+            'Content-Type': 'multipart/form-data',
           },
-        }
+          validateStatus: () => true,
+          timeout: 10000,  // Allow all status codes to prevent unintentional rejection
+        },
       );
       alert(`File uploaded successfully: ${response.data.path}`);
     } catch (error) {
-      alert(`File ${path} failed to upload`);
-      console.error(error);
+      console.error('Error details:', error);
+      alert(`Unexpected error occurred: ${error}`);
     } finally {
       setLoading(false); // Set loading state to false after the operation
     }
@@ -100,7 +102,10 @@ const Upload: React.FC = () => {
         onClick={() => setPath("image")} // Set path for Image
       />
       {image && (
-        <div style={{ marginTop: "20px" }} className="bg-[#F3F3E0] max-h-[20vh] overflow-scroll">
+        <div
+          style={{ marginTop: "20px" }}
+          className="bg-[#F3F3E0] max-h-[20vh] overflow-scroll"
+        >
           <p>Preview:</p>
           <img
             src={image}
@@ -118,11 +123,7 @@ const Upload: React.FC = () => {
         {loading ? (
           <ButtonLoading />
         ) : (
-          <Button
-            variant="outline"
-            onClick={handleSave}
-            disabled={!file}
-          >
+          <Button variant="outline" onClick={handleSave} disabled={!file}>
             Save
           </Button>
         )}
