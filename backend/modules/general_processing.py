@@ -10,6 +10,51 @@ class GeneralProcessing:
         pass
 
     @staticmethod
+    def datasetToPC(centeredMatrix: np.ndarray) -> np.ndarray:
+        U, S, V = np.linalg.svd(centeredMatrix)
+        return V
+    
+    @staticmethod
+    def projectPCdatabase(centeredMatrix: np.ndarray, pc: np.ndarray, kval: int) -> np.ndarray:
+        if kval == -1:
+            kval = pc.shape[1]-1
+        simplifiedPC: np.ndarray = pc[:, :kval]
+        projectedMatrix = centeredMatrix @ simplifiedPC
+        return projectedMatrix
+    
+    @staticmethod
+    def projectPCquery(matrix: np.ndarray, pc: np.ndarray, kval: int) -> np.ndarray:
+        if kval == -1:
+            kval = pc.shape[1]-1
+        simplifiedPC: np.ndarray = pc[:, :kval]
+        projectedMatrix = matrix @ simplifiedPC
+        return projectedMatrix
+    
+    @staticmethod
+    def euclideanClosest(matrix: np.ndarray, query: np.ndarray) -> List[int]:
+        closest: Tuple[int, int] = []
+        for i in range(matrix.shape[0]):
+            distance: float = GeneralProcessing.euclideanDistance(matrix[i], query)
+            closest.append((distance, i))
+        closest = sorted(closest)
+        index: List[int] = []
+        for i in range(len(closest)):
+            index.append(closest[i][1])
+        return index
+    
+    @staticmethod
+    def cosineClosest(matrix: np.ndarray, query: np.ndarray) -> List[int]:
+        closest: Tuple[int, int] = []
+        for i in range(matrix.shape[0]):
+            distance: float = GeneralProcessing.cosineSimilarity(matrix[i], query)
+            closest.append((distance, i))
+        closest = sorted(closest, reverse=True)
+        index: List[int] = []
+        for i in range(len(closest)):
+            index.append(closest[i][1])
+        return index
+
+    @staticmethod
     def multiplyMatrix(matrix1: np.ndarray, matrix2: np.ndarray) -> np.ndarray:
         multMatrix: np.ndarray = np.zeros((matrix1.shape[0], matrix2.shape[1]))
         for i in range(matrix1.shape[0]):
@@ -50,12 +95,18 @@ class GeneralProcessing:
     
     @staticmethod
     def centerMatrix(matrix: np.ndarray) -> np.ndarray:
-        mean: np.ndarray = GeneralProcessing.meanMatrix(matrix)
-        centeredMatrix: np.ndarray = np.zeros(matrix.shape)
-        for i in range(matrix.shape[0]):
-            for j in range(matrix.shape[1]):
-                centeredMatrix[i][j] = matrix[i][j] - mean[j]
-        return centeredMatrix
+        # mean: np.ndarray = GeneralProcessing.meanMatrix(matrix)
+        # centeredMatrix: np.ndarray = np.zeros(matrix.shape)
+        # for i in range(matrix.shape[0]):
+        #     for j in range(matrix.shape[1]):
+        #         centeredMatrix[i][j] = matrix[i][j] - mean[j]
+        # return centeredMatrix
+        return matrix - np.mean(matrix, axis=0)
+    
+    @staticmethod
+    def meansMatrix(matrix: np.ndarray) -> np.ndarray:
+        meansMatrix: np.ndarray = np.mean(matrix, axis=0)
+        return meansMatrix
     
     @staticmethod
     def covarianceMatrix(matrix: np.ndarray) -> np.ndarray:
@@ -136,10 +187,11 @@ class GeneralProcessing:
     
     @staticmethod
     def euclideanDistance(vector1: np.ndarray, vector2: np.ndarray) -> float:
-        sum: float = 0
-        for i in range(vector1.shape[0]):
-            sum += (vector1[i] - vector2[i]) ** 2
-        return math.sqrt(sum)
+        # sum: float = 0
+        # for i in range(vector1.shape[0]):
+        #     sum += (vector1[i] - vector2[i]) ** 2
+        # return math.sqrt(sum)
+        return np.linalg.norm(vector1 - vector2)
     
     @staticmethod
     def cosineSimilarity(vector1: np.ndarray, vector2: np.ndarray) -> float:
@@ -158,7 +210,6 @@ class GeneralProcessing:
         eigenSpace: np.ndarray = GeneralProcessing.eigenSpace(eigenValues, covMatrix)
         return eigenSpace[:, :kval]
         
-
     @staticmethod
     def projectedDataset(dataset: np.ndarray, kval: int) -> np.ndarray:
         if kval == -1:
