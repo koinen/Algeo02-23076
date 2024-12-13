@@ -126,6 +126,7 @@ class ImageProcessing:
         #                 resized[newRow][newCol] = newValue
         
         # return resized.astype(np.uint8)
+        # return resized.astype(np.uint8)
 
     @staticmethod
     def __flatten(resized : np.ndarray) -> np.ndarray:
