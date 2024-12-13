@@ -17,14 +17,17 @@ class ImageProcessing:
     @staticmethod
     def __greyscale(imageMatrix: np.ndarray) -> np.ndarray:
         # Convert the image to greyscale
-        greyscaledImageMatrix : np.ndarray = np.zeros((len(imageMatrix), len(imageMatrix[0])), dtype=int)
-        for i in range(len(imageMatrix)):
-            for j in range(len(imageMatrix[0])):
-                # Convert to greyscale
-                greyscaledImageMatrix[i][j] = int(0.2989 * imageMatrix[i][j][0] + # Red
-                                                  0.5870 * imageMatrix[i][j][1] + # Green
-                                                  0.1140 * imageMatrix[i][j][2])  # Blue
-        return greyscaledImageMatrix.astype(np.uint8)
+        image = Image.fromarray(imageMatrix)
+        greyscaled = image.convert("L")
+        return np.array(greyscaled)
+        # greyscaledImageMatrix : np.ndarray = np.zeros((len(imageMatrix), len(imageMatrix[0])), dtype=int)
+        # for i in range(len(imageMatrix)):
+        #     for j in range(len(imageMatrix[0])):
+        #         # Convert to greyscale
+        #         greyscaledImageMatrix[i][j] = int(0.2989 * imageMatrix[i][j][0] + # Red
+        #                                           0.5870 * imageMatrix[i][j][1] + # Green
+        #                                           0.1140 * imageMatrix[i][j][2])  # Blue
+        # return greyscaledImageMatrix.astype(np.uint8)
 
     @staticmethod
     def __flatten_index(x, y, size):
@@ -88,49 +91,54 @@ class ImageProcessing:
 
     @staticmethod
     def __resize(greyscaledImageMatrix: np.ndarray) -> np.ndarray:
+        
         """
         Resize the image using bicubic interpolation.
         """
-        IMAGE_SIZE = 200
-        resized : np.ndarray = np.zeros((IMAGE_SIZE, IMAGE_SIZE), dtype=int)
-        width : int = len(greyscaledImageMatrix[0])
-        height : int = len(greyscaledImageMatrix)
-        heightScale : float = IMAGE_SIZE / height
-        widthScale : float = IMAGE_SIZE / width
-        downWidthScale : int = max(1, int(1 / widthScale)) 
-        downHeightScale : int = max(1, int(1 / heightScale))
-        D = ImageProcessing.__generateDMatrix()
-        for x in range(0, width, downWidthScale):
-            for y in range(0, height, downHeightScale):
-                # Get the surrounding 4x4 grid
-                surroundings : np.ndarray = np.zeros(16)
-                for i in range(4):
-                    for j in range(4):
-                        oldX = max(min(x + i - 1, width - 1), 0)
-                        oldY = max(min(y + j - 1, height - 1), 0)
-                        surroundings[4 * i + j] = greyscaledImageMatrix[oldY][oldX]
-                coef : np.ndarray = ImageProcessing.__getCoef(np.dot(D, surroundings))
-                for i in range(0, int(heightScale) + 1):
-                    for j in range(0, int(widthScale) + 1):
-                        newValue : int = ImageProcessing.__getInterpolatedValue(coef, i / heightScale, j / widthScale)
-                        newValue = max(0, min(newValue, 255))
-                        newRow : int = min(int(y * heightScale + i), IMAGE_SIZE-1)
-                        newCol : int = min(int(x * widthScale + j), IMAGE_SIZE-1)
-                        resized[newRow][newCol] = newValue
+        image = Image.fromarray(greyscaledImageMatrix)
+        resized = image.resize((100, 100), Image.BICUBIC)
+        return np.array(resized)
+        # IMAGE_SIZE = 200
+        # resized : np.ndarray = np.zeros((IMAGE_SIZE, IMAGE_SIZE), dtype=int)
+        # width : int = len(greyscaledImageMatrix[0])
+        # height : int = len(greyscaledImageMatrix)
+        # heightScale : float = IMAGE_SIZE / height
+        # widthScale : float = IMAGE_SIZE / width
+        # downWidthScale : int = max(1, int(1 / widthScale)) 
+        # downHeightScale : int = max(1, int(1 / heightScale))
+        # D = ImageProcessing.__generateDMatrix()
+        # for x in range(0, width, downWidthScale):
+        #     for y in range(0, height, downHeightScale):
+        #         # Get the surrounding 4x4 grid
+        #         surroundings : np.ndarray = np.zeros(16)
+        #         for i in range(4):
+        #             for j in range(4):
+        #                 oldX = max(min(x + i - 1, width - 1), 0)
+        #                 oldY = max(min(y + j - 1, height - 1), 0)
+        #                 surroundings[4 * i + j] = greyscaledImageMatrix[oldY][oldX]
+        #         coef : np.ndarray = ImageProcessing.__getCoef(np.dot(D, surroundings))
+        #         for i in range(0, int(heightScale) + 1):
+        #             for j in range(0, int(widthScale) + 1):
+        #                 newValue : int = ImageProcessing.__getInterpolatedValue(coef, i / heightScale, j / widthScale)
+        #                 newValue = max(0, min(newValue, 255))
+        #                 newRow : int = min(int(y * heightScale + i), IMAGE_SIZE-1)
+        #                 newCol : int = min(int(x * widthScale + j), IMAGE_SIZE-1)
+        #                 resized[newRow][newCol] = newValue
         
-        return resized.astype(np.uint8)
+        # return resized.astype(np.uint8)
 
     @staticmethod
     def __flatten(resized : np.ndarray) -> np.ndarray:
         """
         Flatten the resized image to a vector (1D Matrix).
         """
-        height : int = len(resized)
-        width : int = len(resized[0])
-        flattened : np.ndarray = np.zeros(height * width, dtype=int)
-        for i in range(height):
-            for j in range(width):
-                flattened[i * height + j] = resized[i][j]
+        flattened : np.ndarray = np.array(resized).flatten()
+        # height : int = len(resized)
+        # width : int = len(resized[0])
+        # flattened : np.ndarray = np.zeros(height * width, dtype=int)
+        # for i in range(height):
+        #     for j in range(width):
+        #         flattened[i * height + j] = resized[i][j]
 
         return flattened
     
