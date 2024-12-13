@@ -121,10 +121,11 @@ async def upload_dataset(path: str):
             # check if the entry is an audio file
             elif entry.is_file() and entry.name.lower().endswith(('.mid')):
                 # process the audio file to a vector
-                audio_vector = MidiProcessing.processMidi(entry.path)
-                audio_data_center.append(audio_vector)
+                audio_matrix = MidiProcessing.processMidi(entry.path)
+                audio_data_center.append(audio_matrix)
                 audio_file_names.append(entry.name)
                 print(f"Processed audio {entry.name}")
+                
             # try:
             #     shutil.copy(entry.path, os.path.join(save_path, entry.name))
             # except Exception as e:

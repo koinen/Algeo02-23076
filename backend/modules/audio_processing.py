@@ -13,93 +13,46 @@ class MidiProcessing:
         pass
 
     @staticmethod
-    #TAKES FIRST CHANNEL ONLY, only takes start, end, pitch
-    def midiToMatrix(midi : pretty_midi.PrettyMIDI) -> np.ndarray:
-        matrixSong: List[List[float]] = []
-        #takes first channel
-        channel = midi.instruments[0]
-        for note in channel.notes:
-            #start, end, pitch
-            matrixSong.append([note.start, note.end, note.pitch, note.velocity])
+    def create_fuzzy_histogram(data, bins, sigma):
+        histogram = np.zeros(len(bins))
+        
+        for value in data:
+            weights = np.exp(-((bins - value) ** 2) / (2 * sigma ** 2))
+            histogram += weights
 
-        res: np.ndarray = np.array(matrixSong)
-        return res
-    
-    # normalize tempo and pitch, use min max normalization
-    @staticmethod    
-    def normalizePitch(midi: pretty_midi.PrettyMIDI) -> pretty_midi.PrettyMIDI:
-        min_pitch = float('inf')
-        max_pitch = float('-inf')
+        histogram /= np.sum(histogram)
         
-        for instrument in midi.instruments:
-            for note in instrument.notes:
-                if note.pitch < min_pitch:
-                    min_pitch = note.pitch
-                if note.pitch > max_pitch:
-                    max_pitch = note.pitch
-        
-        for instrument in midi.instruments:
-            for note in instrument.notes:
-                note.pitch = (note.pitch - min_pitch) / (max_pitch - min_pitch)
-        
-        return midi
-        
-    @staticmethod
-    # window 20 beat, slide 4 beat
-    def windowingMatrix(matrix: np.ndarray, bpm: int) -> List[np.ndarray]:
-        time: float = 0
-        timeDelay: float = 60 / bpm
-        windowedMatrix: List[np.ndarray] = []
-        while time <= matrix[-1][1]:
-            currentWindow: np.ndarray = np.zeros((20, 4))
-            for i in range(20):
-                start_time = time + i * timeDelay
-                end_time = time + (i + 1) * timeDelay
-                notes_in_window = matrix[(start_time <= matrix[:, 0]) & (matrix[:, 0] < end_time)]
-                
-                # ambil velocity paling besar
-                if len(notes_in_window) > 1:
-                    max_velocity = notes_in_window[0][3]
-                    max_note = notes_in_window[0]
-                    for note in notes_in_window:
-                        if note[3] > max_velocity:
-                            max_velocity = note[3]
-                            max_note = note
-                    currentWindow[i] = max_note
-                elif len(notes_in_window) > 0:
-                    currentWindow[i] = notes_in_window[0]                    
-            windowedMatrix.append(currentWindow)
-            time += 4 * timeDelay
-        return windowedMatrix
+        return histogram
 
     @staticmethod
-    def pitchVector(windowedMatrix: np.ndarray) -> np.ndarray:
-        pitchVector: List[int] = []
-        for window in windowedMatrix:
-            pitchVector.append(window[:, 2])
-        pitchVector = np.array(pitchVector)
-        return pitchVector
-    
-    @staticmethod
-    def toneTransitionVector(pitchVector: np.ndarray) -> np.ndarray:
-        toneTransitionVector: List[int] = []
-        for pitch in pitchVector:
-            toneTransitionVector.append(np.diff(pitch))
-        toneTransitionVector = np.array(toneTransitionVector)
-        return toneTransitionVector
-    
-    @staticmethod
-    def processMidi(midi: pretty_midi.PrettyMIDI, bpm: int) -> np.ndarray:
-        processedMidi: np.ndarray = MidiProcessing.midiToMatrix(midi)
-        processedMidi = MidiProcessing.normalizePitch(processedMidi)
-        windowedMatrix: List[np.ndarray] = MidiProcessing.windowingMatrix(processedMidi, bpm)
-        resultMatrix: List[np.ndarray] = []
-        for window in windowedMatrix:
-            pitchVector: np.ndarray = MidiProcessing.pitchVector(window)
-            toneTransitionVector: np.ndarray = MidiProcessing.toneTransitionVector(pitchVector)
-            histogramsResult = histograms(pitchVector)
-            resultMatrix.append(np.concatenate((toneTransitionVector, histogramsResult["ATB"], histogramsResult["RTB"], histogramsResult["FTB"])))
-        return np.array(resultMatrix)
+    def processMidi(path):
+        WINDOW_SIZE = 20 
+        HOP_SIZE = 4
+        midi_data = pretty_midi.PrettyMIDI(path)
+        melody_notes = midi_data.instruments[0].notes
+        queryBPM = midi_data.estimate_tempo()
+        melody_notes = np.array([[note.start, note.end, note.pitch, note.velocity] for note in melody_notes])
+        for note in melody_notes:
+            note[0] = note[0] * (120 / queryBPM) #BPM = 120
+            note[1] = note[1] * (120 / queryBPM)
         
+        beat = 60 / 120 #BPM
+        windows = []
+        current_time = 0
+        while current_time + WINDOW_SIZE * beat < melody_notes[-1][1]:
+            windows.append(melody_notes[(melody_notes[:, 0] >= current_time) & (melody_notes[:, 0] < current_time + WINDOW_SIZE * beat)][:, 2])
+            current_time += HOP_SIZE * beat
+
+        windows = [window for window in windows if len(window) > 0]
         
-    
+        window_feature_vector = np.array([])
+        for window in windows:
+            first_tone = window[0]
+            fuzzy_atb = MidiProcessing.create_fuzzy_histogram(window, np.arange(129), 1)
+            fuzzy_rtb = MidiProcessing.create_fuzzy_histogram(np.diff(window), np.arange(-127, 129), 1)
+            fuzzy_ftb = MidiProcessing.create_fuzzy_histogram(window - first_tone, np.arange(-127, 129), 1)
+            current_window_feature_vector = np.concatenate((fuzzy_atb, fuzzy_rtb, fuzzy_ftb))
+            
+            window_feature_vector = np.append(window_feature_vector, current_window_feature_vector)
+        
+        return window_feature_vector
