@@ -133,8 +133,11 @@ async def upload_dataset(path: str):
             # shutil.copy(entry.path, os.path.join(save_path, entry.name))
         
         # save the image data to the save path
+        print("succeeded")
         np.save(os.path.join(save_path, "image_data.npy"), np.array(image_data_center))
-        np.save(os.path.join(save_path, "audio_data.npy"), np.array(audio_data_center))
+        print("succeeded")
+        np.save(os.path.join(save_path, "audio_data.npy"), np.array(audio_data_center, dtype=object))
+        print("succeeded")
         with open(os.path.join(save_path, "image_file_names.txt"), "w") as f:
             f.write("\n".join(image_file_names))
         with open(os.path.join(save_path, "audio_file_names.txt"), "w") as f:
