@@ -3,14 +3,12 @@ from fastapi.responses import Response
 from fastapi.middleware.cors import CORSMiddleware
 from PIL import Image
 import io
-from sqlalchemy.orm import Session
-from db import engine, Base, SessionLocal
 import zipfile
 import os
 import shutil
+import json
 from modules.image_processing import *
 from modules.audio_processing import *
-from models import TestConnection  # Assuming you have this model
 from typing import Optional
 
 app = FastAPI()
@@ -25,23 +23,7 @@ app.add_middleware(
 
 @app.get("/")
 async def root():
-    # Create a session
-    db = SessionLocal()
-    try:
-        # Simple database connectivity test
-        test_record = TestConnection(message="Database connection successful!")
-        db.add(test_record)
-        db.commit()
-        
-        # Optional: remove the test record
-        db.delete(test_record)
-        db.commit()
-        
-        return {"message": "Database connection successful"}
-    except Exception as e:
-        return {"message": f"Database connection failed: {str(e)}"}
-    finally:
-        db.close()
+    pass
 
 @app.post("/upload_image")
 async def upload_image(file: UploadFile = File(...)):
@@ -100,7 +82,7 @@ async def upload_dataset(path: str):
         # Open the zip file for extraction
         with zipfile.ZipFile(path, 'r') as zip_ref:
             # Extract all the contents into a directory
-            extract_path = os.path.splitext(path)[0]  # Extract the contents of the zip file to a directory named after the zip file (without the .zip extension)
+            extract_path = "uploads/dataset/extracted"
             zip_ref.extractall(extract_path)
         
         save_path = "uploads/dataset"
@@ -142,12 +124,90 @@ async def upload_dataset(path: str):
             f.write("\n".join(image_file_names))
         with open(os.path.join(save_path, "audio_file_names.txt"), "w") as f:
             f.write("\n".join(audio_file_names))
+        
         return {"message": f"Dataset successfully extracted to {save_path}"}
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
-# Alternatively, if you want to create tables on startup
-@app.on_event("startup")
-def startup_event():
-    # Create tables
-    Base.metadata.create_all(bind=engine)
+@app.post('/upload_mapping')
+async def upload_mapping(file: UploadFile = File(...)):
+    # Validate file type (optional)
+    # json file
+    allowed_types = ['application/json']
+    if file.content_type not in allowed_types:
+        raise HTTPException(status_code=400, detail="Invalid file type")
+    
+    # Create directory if it doesn't exist
+    os.makedirs("uploads", exist_ok=True)
+    
+    file_path = "uploads/mapping.json"
+    
+    # Save the file
+    try:
+        with open(file_path, "wb") as buffer:
+            contents = await file.read()
+            buffer.write(contents)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error saving file: {str(e)}")
+    
+    return {"filename": file.filename, "path": file_path}
+
+
+@app.get('/dataset')
+async def get_dataset(page: Optional[int] = 1):
+    try:
+        LIMIT = 12
+        dataset_path = "uploads/dataset/extracted"
+        not_found = False
+        start_idx = (page-1)*LIMIT
+        count = min(start_idx + LIMIT, len(os.listdir(dataset_path))) - start_idx + 1
+
+        idx = 0
+        song_data = []
+        with open("uploads/dataset/audio_file_names.txt", "r") as f:
+            while True:
+                line = f.readline()
+                if not line:
+                    break
+                if idx >= start_idx:
+                    song_path = os.path.join(dataset_path, line.strip())
+                    song_data.append(song_path)
+                idx += 1
+                if idx >= start_idx + count:
+                    break
+        """
+        Example mapper file:
+        {
+            "song_file_name": {
+                "title": "song_title",
+                "artist": "song_artist",
+                "image_path": "image_path",
+            }
+        }
+        """
+        # Load the mapping file
+        mapper = json.load(open("uploads/mapping.json", "r"))
+
+        # Example usage of mapper
+        for idx, song in enumerate(song_data):
+            # Extract the base name of the song file
+            song_name = os.path.basename(song["song"])  # Assuming each song in song_data is a dictionary with a "song" key
+            
+            if song_name in mapper:
+                # Map the fields using the mapper
+                song_data[idx] = {
+                    "fileName": song_name,
+                    "mapping": {
+                        "artist": mapper[song_name].get("artist"),
+                        "title": mapper[song_name].get("title"),
+                        "imageAbsolutePath": mapper[song_name].get("image_path")
+                    }
+                }
+            else:
+                print(f"Song not found in mapper: {song_name}")
+        
+        song_data = json.dumps(song_data)
+        return {"songs": song_data}
+
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
