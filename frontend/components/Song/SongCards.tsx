@@ -5,17 +5,7 @@ import NotFound from "../NotFound/NotFound";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-
-interface MappingItems {
-  artist?: string;
-  title?: string;
-  image?: string;
-}
-
-interface SongItem {
-  fileName: string;
-  mapping?: MappingItems;
-}
+import type { SongProps } from "./Song";
 
 interface SongCardsProps {
   itemsPerPage: number;
@@ -23,7 +13,7 @@ interface SongCardsProps {
 }
 
 const SongCards: React.FC<SongCardsProps> = ({ itemsPerPage, currentPage }) => {
-  const [data, setData] = useState<SongItem[]>([]);
+  const [data, setData] = useState<SongProps[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {

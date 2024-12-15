@@ -16,7 +16,7 @@ interface MappingItems {
   image?: string;
 }
 
-interface SongProps {
+export interface SongProps {
   fileName: string;
   mapping?: MappingItems;
 }
