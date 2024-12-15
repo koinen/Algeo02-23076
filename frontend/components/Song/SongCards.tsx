@@ -58,7 +58,7 @@ const SongCards: React.FC<SongCardsProps> = ({ itemsPerPage, currentPage }) => {
                 fileName={item.fileName || "not found"}
                 mapping={
                   item.mapping || {
-                    imageAbsolutePath: "/album/def.png",
+                    image: "/album/def.png",
                     title: "Untitled",
                     artist: "Anonymous",
                   }
