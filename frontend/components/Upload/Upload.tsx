@@ -17,11 +17,17 @@ const UploadButton: React.FC<ButtonProps> = ({
   text,
   onClick,
 }) => {
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const uploadedFile = e.target.files?.[0];
     if (uploadedFile) {
       setFile(uploadedFile); // Save the file object
-      setImage(URL.createObjectURL(uploadedFile)); // Create a preview URL
+
+      // Only create a preview URL for image files
+      if (text === "Image") {
+        setImage(URL.createObjectURL(uploadedFile));
+      } else {
+        setImage(null); // No preview for non-image files
+      }
     }
   };
 
@@ -38,9 +44,15 @@ const UploadButton: React.FC<ButtonProps> = ({
       <input
         id={`upload-button-${text}`}
         type="file"
-        accept="image/*"
+        accept={
+          text === "Song"
+            ? ".wav"
+            : text === "Mapping"
+            ? ".json"
+            : "image/*"
+        } // Accept specific file types
         style={{ display: "none" }}
-        onChange={handleImageChange}
+        onChange={handleFileChange}
       />
     </div>
   );
@@ -55,7 +67,7 @@ const Upload: React.FC = () => {
   // Handle Save button click
   const handleSave = async () => {
     if (!file) {
-      alert("Please upload an image first.");
+      alert("Please upload a file first.");
       return;
     }
 
@@ -74,12 +86,12 @@ const Upload: React.FC = () => {
             'Content-Type': 'multipart/form-data',
           },
           validateStatus: () => true,
-          timeout: 10000,  // Allow all status codes to prevent unintentional rejection
-        },
+          timeout: 10000, // Allow all status codes to prevent unintentional rejection
+        }
       );
       alert(`File uploaded successfully: ${response.data.path}`);
     } catch (error) {
-      console.error('Error details:', error);
+      console.error("Error details:", error);
       alert(`Unexpected error occurred: ${error}`);
     } finally {
       setLoading(false); // Set loading state to false after the operation
@@ -100,6 +112,13 @@ const Upload: React.FC = () => {
         setImage={setImage}
         setFile={setFile}
         onClick={() => setPath("image")} // Set path for Image
+      />
+      <br />
+      <UploadButton
+        text="Mapping"
+        setImage={setImage}
+        setFile={setFile}
+        onClick={() => setPath("mapping")} // Set path for Mapping
       />
       {image && (
         <div
@@ -144,3 +163,4 @@ const Upload: React.FC = () => {
 };
 
 export default Upload;
+

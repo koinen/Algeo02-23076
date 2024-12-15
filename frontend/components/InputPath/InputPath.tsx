@@ -29,8 +29,7 @@ const InputPath: React.FC = () => {
 
     try {
       const response = await axios.post(
-        "http://127.0.0.1:8000/upload_dataset/",
-        { path }
+        `http://127.0.0.1:8000/upload_dataset?path=${ path }`,
       );
       alert(`Path submitted successfully: ${response.data.message}`);
     } catch (error) {

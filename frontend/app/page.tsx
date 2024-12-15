@@ -1,55 +1,29 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Pagination from "../components/Pagination/Pagination";
 import SongCards from "../components/Song/SongCards";
 import Upload from "../components/Upload/Upload";
-import { Button } from "@/components/ui/button";
 import Humming from "@/components/Humming/Humming";
-
-interface SongItem {
-  title: string;
-  image?: string;
-}
 
 const ITEMS_PER_PAGE = 12;
 
 export default function HomePage() {
   const [currentPage, setCurrentPage] = useState(0);
-  const [data, setData] = useState<SongItem[]>([]);
-  const [loading, setLoading] = useState(true);
-
+  const [itemCount, setItemCount] = useState(0);
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("http://127.0.0.1:8000/dataset/");
-        setData(response.data);
+        const response = await axios.get("http://127.0.0.1:8000/count/");
+        setItemCount(response.data);
       } catch (error) {
-        alert("Failed to load dataset");
-      } finally {
-        setLoading(false);
+        setItemCount(20); // Placeholder for itemCount
+        alert("Failed to load page count");
       }
     };
 
     fetchData();
   }, []);
-
-  const handleTestClick = () => {
-    const placeholder = Array.from({ length: 50 }, (_, index) => ({
-      title: `foto ${index + 1}`,
-    }));
-    setData(placeholder);
-  };
-
-  const totalItems = data.length;
-
-  if (loading) {
-    return (
-      <div className="bg-[#608BC1] flex justify-center items-center h-screen">
-        Loading...
-      </div>
-    );
-  }
 
   return (
     <div
@@ -62,7 +36,7 @@ export default function HomePage() {
             <Upload />
             <div className="flex justify-center items-center h-[15vh]">
               <Pagination
-                totalItems={totalItems}
+                totalItems={itemCount}
                 itemsPerPage={ITEMS_PER_PAGE}
                 currentPage={currentPage}
                 setCurrentPage={setCurrentPage}
@@ -72,17 +46,10 @@ export default function HomePage() {
               Current Page: {currentPage + 1}
             </span>
             <br />
-            <Button variant="outline" onClick={handleTestClick}>
-              Click This to Test
-            </Button>
-            <Humming/>
+            <Humming />
           </div>
         </div>
-        <SongCards
-          data={data}
-          itemsPerPage={ITEMS_PER_PAGE}
-          currentPage={currentPage}
-        />
+        <SongCards itemsPerPage={ITEMS_PER_PAGE} currentPage={currentPage} />
       </div>
     </div>
   );
