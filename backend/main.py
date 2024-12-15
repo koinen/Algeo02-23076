@@ -107,12 +107,6 @@ async def upload_dataset(path: str):
                 audio_data_center.append(audio_matrix)
                 audio_file_names.append(entry.name)
                 print(f"Processed audio {entry.name}")
-                
-            # try:
-            #     shutil.copy(entry.path, os.path.join(save_path, entry.name))
-            # except Exception as e:
-            #     raise HTTPException(status_code=500, detail=f"Error copying file {entry.name}: {str(e)}")
-            # shutil.copy(entry.path, os.path.join(save_path, entry.name))
         
         # save the image data to the save path
         print("succeeded")
@@ -157,7 +151,7 @@ async def upload_mapping(file: UploadFile = File(...)):
 async def get_dataset(page: Optional[int] = 1):
     try:
         LIMIT = 12
-        dataset_path = "uploads/dataset/extracted"
+        dataset_path = "uploads/dataset/extracted/"
         not_found = False
         start_idx = (page-1)*LIMIT
         count = min(start_idx + LIMIT, len(os.listdir(dataset_path))) - start_idx + 1
@@ -185,6 +179,20 @@ async def get_dataset(page: Optional[int] = 1):
             }
         }
         """
+        # if mapper file does not exist, return the song data as is
+        if not os.path.exists("uploads/mapping.json"):
+            for idx, song in enumerate(song_data):
+                song_data[idx] = {
+                    "fileName": os.path.basename(song),
+                    "mapping": {
+                        "artist": None,
+                        "title": None,
+                        "imageAbsolutePath": None
+                    }
+                }
+            song_data = json.dumps(song_data)
+            return {"songs": song_data}
+            
         # Load the mapping file
         mapper = json.load(open("uploads/mapping.json", "r"))
 
