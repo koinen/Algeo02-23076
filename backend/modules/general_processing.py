@@ -169,6 +169,7 @@ class GeneralProcessing:
         return eigenValues
     
     @staticmethod
+    # DEPRECATED
     def eigenSpace(eigenValues: np.ndarray, matrix: np.ndarray) -> np.ndarray:
         eigenSpace: List[np.ndarray] = []
         for i in range(eigenValues.shape[0]):

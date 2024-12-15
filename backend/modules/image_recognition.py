@@ -3,8 +3,10 @@ from general_processing import GeneralProcessing
 from PIL import Image
 import numpy as np
 import os
+import time
 
 def processDatabaseImage(dataset_file, reduced_dimension):
+    start = time.time()
     dataset = np.load(f"../uploads/dataset/{dataset_file}")
     print("Dataset loaded:", dataset[0])
     center_dataset = GeneralProcessing.centerMatrix(dataset)
@@ -20,7 +22,10 @@ def processDatabaseImage(dataset_file, reduced_dimension):
     np.save("../uploads/processed/project_dataset_img.npy", project_dataset)
     np.save("../uploads/processed/vh_img.npy", vh.T[:, :reduced_dimension])
     
-    return mean, project_dataset, vh.T[:, :reduced_dimension]
+    runtime_seconds = time.time() - start
+    
+    # return mean, project_dataset, vh.T[:, :reduced_dimension], runtime_seconds
+    return runtime_seconds
 
 def openProcessedDatabaseImage():
     if not os.path.exists("../uploads/processed/mean_img.npy"):
@@ -41,6 +46,7 @@ def processQueryImage(image_file_name, mean, pca):
     return project_query
 
 def queryImage(image_file_name, mean, pca):
+    start = time.time()
     project_query = processQueryImage(image_file_name, mean, pca)
     project_dataset = np.load("../uploads/processed/project_dataset.npy")
     index = GeneralProcessing.euclideanClosest(project_dataset, project_query)
@@ -49,7 +55,9 @@ def queryImage(image_file_name, mean, pca):
         file_names = [line.strip() for line in lines]
     
     top_5_files = [file_names[i] for i in index[:5]]
-    return top_5_files
+    runtime_seconds = time.time() - start
+
+    return top_5_files, runtime_seconds
     
 
 

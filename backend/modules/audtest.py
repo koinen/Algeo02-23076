@@ -8,7 +8,8 @@ if __name__ == "__main__":
     midi = np.load("../uploads/dataset/audio_data.npy", allow_pickle=True)
     query_midi = pretty_midi.PrettyMIDI("../uploads/FF3_Battle_(Piano).mid")
     # ff3 = midi[24][0]
-    # final = processQueryMIDI("FF3_Battle_(Piano).mid")
+    # final = processQueryMIDI("output.mid")
+    # print(final)
     # ff3s = final[0]
-    index = queryMIDI("FF3_Battle_(Piano).mid")
+    index = queryMIDI("output.mid")
     print(index)

@@ -99,7 +99,8 @@ class MidiProcessing:
         beat = 60 / 120 #BPM
         windows = []
         current_time = 0
-        while current_time + WINDOW_SIZE * beat < melody_notes[-1][1]:
+        while current_time < melody_notes[-1][1]:
+        # while current_time + WINDOW_SIZE * beat < melody_notes[-1][1]:
             windows.append(melody_notes[(melody_notes[:, 0] >= current_time) & (melody_notes[:, 0] < current_time + WINDOW_SIZE * beat)][:, 2])
             current_time += HOP_SIZE * beat
 
