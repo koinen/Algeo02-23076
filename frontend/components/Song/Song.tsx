@@ -13,7 +13,7 @@ import {
 interface MappingItems {
   artist?: string;
   title?: string;
-  image?: string;
+  imageAbsolutePath?: string;
 }
 
 export interface SongProps {
@@ -23,7 +23,7 @@ export interface SongProps {
 
 const Song: React.FC<SongProps> = ({ fileName, mapping }) => {
 
-  const imagePath = `${mapping?.image}`;
+  const imagePath = `${mapping?.imageAbsolutePath}`;
 
   return (
     <HoverCard>
