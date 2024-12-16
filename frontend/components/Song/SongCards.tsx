@@ -20,11 +20,12 @@ const SongCards: React.FC<SongCardsProps> = ({ itemsPerPage, currentPage }) => {
     const fetchData = async () => {
       setLoading(true); // Reset loading state
       try {
-        const response = await axios.get<SongProps[]>(
-          `http://localhost:8000/dataset?page=${currentPage}`
+        // alert(`Fetching dataset page ${currentPage + 1}`);
+        const response = await axios.get(
+          `http://localhost:8000/dataset?page=${currentPage + 1}`
         );
         // console.log("Data fetched:", response.data);
-        alert(`length: ${response.data.length}`);
+        // alert(`length: ${response.data.length}`);
         setData(response.data);
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -42,7 +43,7 @@ const SongCards: React.FC<SongCardsProps> = ({ itemsPerPage, currentPage }) => {
     const placeholder = Array.from({ length: itemsPerPage }, (_, index) => ({
       fileName: `Lagu ${index + 1}`,
       mapping: {
-        image: "/album/def.png",
+        image: "def.png",
         title: "Untitled",
         artist: "Anonymous",
       },
