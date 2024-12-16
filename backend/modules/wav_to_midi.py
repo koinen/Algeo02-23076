@@ -31,8 +31,8 @@ def wav_to_midi(wav_file):
 
     midi.instruments.append(piano)
 
-    midi.write("../uploads/output.mid")
-    print(f"MIDI file saved to: ../uploads/output.mid")
+    midi.write("uploads/output.mid")
+    print(f"MIDI file saved to: uploads/output.mid")
     return time.time() - start_time
 
 
