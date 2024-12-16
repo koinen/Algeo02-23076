@@ -11,6 +11,7 @@ const Humming: React.FC = () => {
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
   const mediaStreamRef = useRef<MediaStream | null>(null);
+  const recordingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const startRecording = async () => {
     try {
@@ -29,6 +30,11 @@ const Humming: React.FC = () => {
       };
       mediaRecorderRef.current.start();
       setIsRecording(true);
+
+      // Stop recording after 10 seconds
+      recordingTimeoutRef.current = setTimeout(() => {
+        stopRecording();
+      }, 10000);
     } catch (error) {
       if (error instanceof Error && error.name === "NotAllowedError") {
         alert("Microphone access denied. Please allow microphone access to record audio.");
@@ -42,6 +48,12 @@ const Humming: React.FC = () => {
     mediaRecorderRef.current?.stop();
     mediaStreamRef.current?.getTracks().forEach((track) => track.stop());
     setIsRecording(false);
+
+    // Clear the timeout if recording is stopped manually
+    if (recordingTimeoutRef.current) {
+      clearTimeout(recordingTimeoutRef.current);
+      recordingTimeoutRef.current = null;
+    }
   };
 
   const submitRecording = async () => {
@@ -80,7 +92,7 @@ const Humming: React.FC = () => {
         variant="outline"
         onClick={isRecording ? stopRecording : startRecording}
       >
-        {isRecording ? "Stop" : "Humming"}
+        humming
       </Button>
       <br />
       {audioURL && (

@@ -10,6 +10,8 @@ import json
 from modules.image_processing import *
 from modules.audio_processing import *
 from typing import Optional
+from modules.image_recognition import *
+from modules.audio_recognition import *
 
 app = FastAPI()
 
@@ -34,20 +36,26 @@ async def upload_image(file: UploadFile = File(...)):
         raise HTTPException(status_code=400, detail="Invalid file type")
     
     # Create directory if it doesn't exist
-    os.makedirs("uploads/image", exist_ok=True)
+    os.makedirs("../frontend/public/query", exist_ok=True)
     
     # Generate a unique filename
-    file_path = os.path.join("uploads", "uploaded_image.jpg")
-    
+    file_path = os.path.join("../frontend/public/query", "uploaded_image.png")
     # Save the file
     try:
         with open(file_path, "wb") as buffer:
             contents = await file.read()
             buffer.write(contents)
+
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error saving file: {str(e)}")
+
+    mean, project_dataset, pca = openProcessedDatabaseImage()
+    if mean is None or project_dataset is None or pca is None:
+        return {"message": "Please upload a dataset first"}
+    else:
+        top_images, process_time = queryImage(file_path, mean, pca)
+        return {"top_images": top_images, "process_time": process_time}
     
-    return {"filename": file.filename, "path": file_path}
 
 @app.post("/upload_song")
 async def upload_song(file: UploadFile = File(...)):
@@ -57,10 +65,10 @@ async def upload_song(file: UploadFile = File(...)):
         raise HTTPException(status_code=400, detail="Invalid file type")
     print(file.content_type)
     # Create directory if it doesn't exist
-    os.makedirs("uploads/audio", exist_ok=True)
+    os.makedirs("../frontend/public/query", exist_ok=True)
     
     # Generate a unique filename
-    file_path = os.path.join("uploads", "uploaded_song.mid")
+    file_path = os.path.join("../frontend/public/query", "uploaded_song.mid")
     
     # Save the file
     try:
@@ -70,7 +78,8 @@ async def upload_song(file: UploadFile = File(...)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error saving file: {str(e)}")
     
-    return {"filename": file.filename, "path": file_path}
+    project_query = queryMIDI(file_path)
+    return {"top_songs": project_query}
 
 @app.post("/upload_dataset")
 async def upload_dataset(path: str):
@@ -93,7 +102,7 @@ async def upload_dataset(path: str):
             extract_path = "../frontend/public/extracted"
             zip_ref.extractall(extract_path)
         
-        save_path = "uploads/dataset"
+        save_path = "uploads/processed"
         image_data_center = []
         audio_data_center = []
         image_file_names = []
@@ -117,16 +126,16 @@ async def upload_dataset(path: str):
                 print(f"Processed audio {entry.name}")
         
         # save the image data to the save path
-        print("succeeded")
-        np.save(os.path.join(save_path, "image_data.npy"), np.array(image_data_center))
-        print("succeeded")
         np.save(os.path.join(save_path, "audio_data.npy"), np.array(audio_data_center, dtype=object))
-        print("succeeded")
+        print(f"Saved audio data to {save_path}")
+        save_path = "uploads"
         with open(os.path.join(save_path, "image_file_names.txt"), "w") as f:
             f.write("\n".join(image_file_names))
         with open(os.path.join(save_path, "audio_file_names.txt"), "w") as f:
             f.write("\n".join(audio_file_names))
         
+        processDatabaseImage(image_data_center, 500)
+
         return {"message": f"Dataset successfully extracted to {save_path}"}
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
@@ -159,14 +168,14 @@ async def upload_mapping(file: UploadFile = File(...)):
 async def get_dataset(page: Optional[int] = 1):
     try:
         LIMIT = 12
-        dataset_path = "uploads/dataset/extracted/"
+        dataset_path = "../frontend/public/extracted"
         not_found = False
         start_idx = (page-1)*LIMIT
         count = min(start_idx + LIMIT, len(os.listdir(dataset_path))) - start_idx + 1
 
         idx = 1
         song_data = []
-        with open("uploads/dataset/audio_file_names.txt", "r") as f:
+        with open("uploads/audio_file_names.txt", "r") as f:
             while True:
                 line = f.readline()
                 if not line:
@@ -225,3 +234,6 @@ async def get_dataset(page: Optional[int] = 1):
 
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
+    
+# @app.get('/count')
+# async def get_count():

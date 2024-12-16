@@ -1,3 +1,6 @@
+import React, { useState, useEffect } from "react";
+import * as Tone from "tone";
+import { Midi } from "@tonejs/midi";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import Image from "next/image";
 import {
@@ -5,9 +8,8 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
-
 export interface SongProps {
-  fileName: number | string;
+  fileName: string;
   mapping: {
     artist?: string;
     title?: string;
@@ -16,6 +18,53 @@ export interface SongProps {
 }
 
 const Song: React.FC<SongProps> = ({ fileName, mapping }) => {
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [midiData, setMidiData] = useState<any>(null);
+
+  useEffect(() => {
+    // Load and parse MIDI file
+    const loadMidi = async () => {
+      const midiUrl = `/extracted/${fileName}`;
+      const midi = await fetch(midiUrl)
+        .then((response) => response.arrayBuffer())
+        .then((buffer) => new Midi(buffer));
+
+      setMidiData(midi);
+    };
+
+    loadMidi();
+  }, [fileName]);
+
+  const handleMidiPlayback = () => {
+    if (isPlaying) {
+      setIsPlaying(false);
+      Tone.Transport.stop();
+      Tone.Transport.cancel(); // Stop the transport and clear scheduled events
+    } else {
+      setIsPlaying(true);
+      if (midiData) {
+        // Set up Tone.js transport
+        Tone.Transport.cancel(); // Clear any previous scheduled events
+
+        // Iterate through each track in the MIDI file
+        midiData.tracks.forEach((track: any) => {
+          const synth = new Tone.Synth().toDestination();
+          
+          // Map through the notes in the track and schedule them for playback
+          track.notes.forEach((note: any) => {
+            synth.triggerAttackRelease(
+              Tone.Frequency(note.midi, "midi").toFrequency(),
+              note.duration,
+              Tone.Transport.seconds + note.time
+            );
+          });
+        });
+        // Start the Tone.js transport to play the scheduled notes
+        Tone.Transport.start();
+      }
+    }
+  };
+
   let imagePath = "";
   if (mapping?.image === "def.png") {
     imagePath = `/album/${mapping?.image}`;
@@ -37,7 +86,12 @@ const Song: React.FC<SongProps> = ({ fileName, mapping }) => {
             ></Image>
             <br />
             {fileName.toString().endsWith(".mid") ? (
-              <p>Cannot play MIDI file</p>
+              <button
+                onClick={handleMidiPlayback}
+                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+              >
+                {isPlaying ? "Stop" : "Play"}
+              </button>
             ) : (
               <audio src={`/extracted/${fileName}`} controls />
             )}
