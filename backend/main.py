@@ -241,6 +241,7 @@ async def get_count():
         # get the count of the number of songs
         dataset_path = "../frontend/public/extracted"
         count = len(os.listdir(dataset_path))
-        return {"count": count}
+        count = count // 12 + 1
+        return count
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
