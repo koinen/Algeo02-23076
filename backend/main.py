@@ -37,7 +37,7 @@ async def upload_image(file: UploadFile = File(...)):
     os.makedirs("uploads/image", exist_ok=True)
     
     # Generate a unique filename
-    file_path = os.path.join("uploads/image", "uploaded_image.jpg")
+    file_path = os.path.join("uploads", "uploaded_image.jpg")
     
     # Save the file
     try:
@@ -60,7 +60,7 @@ async def upload_song(file: UploadFile = File(...)):
     os.makedirs("uploads/audio", exist_ok=True)
     
     # Generate a unique filename
-    file_path = os.path.join("uploads/audio", "uploaded_song.mid")
+    file_path = os.path.join("uploads", "uploaded_song.mid")
     
     # Save the file
     try:
