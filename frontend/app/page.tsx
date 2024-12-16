@@ -20,32 +20,37 @@ interface SongProps {
 export default function HomePage() {
   const [currentPage, setCurrentPage] = useState(0);
   const [itemCount, setItemCount] = useState(0);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState<boolean>(true);
   const [data, setData] = useState<SongProps[]>([]);
 
   useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      try {
-        // Fetch item count
-        const countResponse = await axios.get("http://127.0.0.1:8000/count/");
-        setItemCount(countResponse.data);
-
-        // Fetch data for the current page
-        const dataResponse = await axios.get(
-          `http://localhost:8000/dataset?page=${currentPage + 1}`
-        );
-        setData(dataResponse.data);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-        alert("Failed to load data. Please try again later.");
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchData();
   }, [currentPage]); // Add currentPage to the dependency array
+
+  const fetchData = async () => {
+    setLoading(true);
+    try {
+      // Fetch item count
+      const countResponse = await axios.get("http://127.0.0.1:8000/count");
+      setItemCount(countResponse.data);
+
+      const dataResponse = await axios.get(
+        `http://localhost:8000/dataset?page=${currentPage + 1}`
+      );
+      setData(dataResponse.data);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      alert("item count :" + itemCount);
+      alert("data length :" + data.length);
+      alert("Failed to load data. Please try again later.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleQuery = async (data: SongProps[]) => {
+    setData(data);
+  };
 
   if (loading) {
     return <div>Loading...</div>;
@@ -59,7 +64,7 @@ export default function HomePage() {
       <div className="flex h-full w-full">
         <div className="w-[20%] bg-[#608BC1]">
           <div className="flex flex-col">
-            <Upload />
+            <Upload handleQuery={handleQuery} fetchData={fetchData} />
             <div className="flex justify-center items-center h-[15vh]">
               <Pagination
                 totalItems={itemCount}
@@ -72,14 +77,10 @@ export default function HomePage() {
               Current Page: {currentPage + 1}
             </span>
             <br />
-            <Humming />
+            <Humming handleQuery={handleQuery} fetchData={fetchData} />
           </div>
         </div>
-        <SongCards
-          itemsPerPage={ITEMS_PER_PAGE}
-          currentPage={currentPage}
-          data={data}
-        />
+        <SongCards data={data} />
       </div>
     </div>
   );

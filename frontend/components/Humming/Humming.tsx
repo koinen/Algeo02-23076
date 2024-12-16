@@ -3,7 +3,12 @@ import axios from "axios";
 import { Button } from "@/components/ui/button";
 import { ButtonLoading } from "../Atom/Button";
 
-const Humming: React.FC = () => {
+interface UploadProps {
+  handleQuery: (data: any) => void;
+  fetchData: () => void; // Add fetchData prop to reset data
+}
+
+const Humming: React.FC<UploadProps> = ({ handleQuery, fetchData }) => {
   const [isRecording, setIsRecording] = useState(false);
   const [audioURL, setAudioURL] = useState<string | null>(null);
   const [audioBlob, setAudioBlob] = useState<Blob | null>(null);
@@ -37,7 +42,9 @@ const Humming: React.FC = () => {
       }, 10000);
     } catch (error) {
       if (error instanceof Error && error.name === "NotAllowedError") {
-        alert("Microphone access denied. Please allow microphone access to record audio.");
+        alert(
+          "Microphone access denied. Please allow microphone access to record audio."
+        );
       } else {
         console.error("Error accessing microphone:", error);
       }
@@ -69,15 +76,18 @@ const Humming: React.FC = () => {
 
     try {
       const response = await axios.post(
-        "http://127.0.0.1:8000/upload_humming/",
+        "http://127.0.0.1:8000/upload_song",
         formData,
         {
           headers: {
             "Content-Type": "multipart/form-data",
           },
+          validateStatus: () => true,
+          timeout: 10000, // Allow all status codes to prevent unintentional rejection
         }
       );
       alert(`File uploaded successfully: ${response.data.path}`);
+      handleQuery(response.data);
     } catch (error) {
       alert("Failed to upload file humming");
       console.error(error);
@@ -104,13 +114,26 @@ const Humming: React.FC = () => {
       {loading ? (
         <ButtonLoading />
       ) : (
-        <Button
-          variant="outline"
-          onClick={submitRecording}
-          disabled={!audioBlob}
-        >
-          Search
-        </Button>
+        <div className="flex justify-center items-center gap-6">
+          <Button
+            variant="outline"
+            onClick={submitRecording}
+            disabled={!audioBlob}
+          >
+            Search
+          </Button>
+          <Button
+            variant="outline"
+            onClick={() => {
+              setAudioURL(null);
+              setAudioBlob(null);
+              fetchData();
+            }}
+            disabled={!audioBlob}
+          >
+            Cancel
+          </Button>
+        </div>
       )}
     </div>
   );

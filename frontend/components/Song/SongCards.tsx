@@ -6,12 +6,10 @@ import { Button } from "@/components/ui/button";
 import { SongProps } from "./Song";
 
 interface SongCardsProps {
-  itemsPerPage: number;
-  currentPage: number;
   data: SongProps[];
 }
 
-const SongCards: React.FC<SongCardsProps> = ({ itemsPerPage, currentPage, data }) => {
+const SongCards: React.FC<SongCardsProps> = ({ data }) => {
   // const [data, setData] = useState<SongProps[]>([]);
   // const [loading, setLoading] = useState<boolean>(true);
 
@@ -58,12 +56,8 @@ const SongCards: React.FC<SongCardsProps> = ({ itemsPerPage, currentPage, data }
           {data.slice(0, 12).map((item, index) => (
             <div key={index} className="bg-[#608BC1]">
               <Song
-                fileName={item.fileName}
-                mapping={{
-                  image: item.mapping?.image || "/album/def.png",
-                  title: item.mapping?.title || "Untitled",
-                  artist: item.mapping?.artist || "Anonymous",
-                }}
+                song={item}
+                index={index}
               />
             </div>
           ))}

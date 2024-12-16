@@ -3,6 +3,7 @@ import { useState } from "react";
 import axios from "axios";
 import { Button } from "@/components/ui/button";
 import { ButtonLoading } from "../Atom/Button";
+import { useRouter } from "next/router"; // Import router
 
 interface ButtonProps {
   setImage: (image: string | null) => void;
@@ -45,11 +46,7 @@ const UploadButton: React.FC<ButtonProps> = ({
         id={`upload-button-${text}`}
         type="file"
         accept={
-          text === "Song"
-            ? ".wav"
-            : text === "Mapping"
-            ? ".json"
-            : "image/*"
+          text === "Song" ? ".mid" : text === "Mapping" ? ".json" : "image/*"
         } // Accept specific file types
         style={{ display: "none" }}
         onChange={handleFileChange}
@@ -58,7 +55,12 @@ const UploadButton: React.FC<ButtonProps> = ({
   );
 };
 
-const Upload: React.FC = () => {
+interface UploadProps {
+  handleQuery: (data: any) => void;
+  fetchData: () => void; // Add fetchData prop to reset data
+}
+
+const Upload: React.FC <UploadProps> = ({ handleQuery, fetchData }) => {
   const [image, setImage] = useState<string | null>(null);
   const [file, setFile] = useState<File | null>(null); // Store file object for saving
   const [path, setPath] = useState<string>(""); // Store the current path
@@ -78,17 +80,18 @@ const Upload: React.FC = () => {
     formData.append("file", file);
 
     try {
-      const response = await axios.post<{ path: string }>(
+      const response = await axios.post(
         `http://127.0.0.1:8000/upload_${path}`,
         formData,
         {
           headers: {
-            'Content-Type': 'multipart/form-data',
+            "Content-Type": "multipart/form-data",
           },
           validateStatus: () => true,
           timeout: 10000, // Allow all status codes to prevent unintentional rejection
         }
       );
+      handleQuery(response.data);
       alert(`File uploaded successfully: ${response.data.path}`);
     } catch (error) {
       console.error("Error details:", error);
@@ -152,6 +155,7 @@ const Upload: React.FC = () => {
             setImage(null);
             setFile(null);
             setPath("");
+            fetchData();
           }}
           disabled={!file}
         >
@@ -163,4 +167,3 @@ const Upload: React.FC = () => {
 };
 
 export default Upload;
-
