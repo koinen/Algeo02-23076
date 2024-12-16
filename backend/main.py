@@ -79,6 +79,14 @@ async def upload_dataset(path: str):
         if not os.path.exists(path):
             raise HTTPException(status_code=400, detail="Path does not exist")
 
+        # Ensure the path is a zip file
+        if not path.lower().endswith('.zip'):
+            raise HTTPException(status_code=400, detail="Path is not a zip file")
+
+        # clean the extracted directory
+        shutil.rmtree("uploads/dataset/extracted", ignore_errors=True)
+        os.makedirs("uploads/dataset/extracted", exist_ok=True)
+
         # Open the zip file for extraction
         with zipfile.ZipFile(path, 'r') as zip_ref:
             # Extract all the contents into a directory
@@ -200,7 +208,7 @@ async def get_dataset(page: Optional[int] = 1):
             # Example usage of mapper
             for idx, song in enumerate(song_data):
                 # Extract the base name of the song file
-                song_name = os.path.basename(song[idx])  # Assuming each song in song_data is a dictionary with a "song" key
+                song_name = os.path.basename(song)  # Assuming each song in song_data is a dictionary with a "song" key
                 
                 if song_name in mapper:
                     # Map the fields using the mapper
