@@ -1,13 +1,13 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 # dependencies
-frontend/node_modules
-backend/venv/
-backend/uploads/
-backend/.venv/
-backend/env/
-backend/.env/
-backend/modules/__pycache__
+src/frontend/node_modules
+src/backend/venv/
+src/backend/uploads/
+src/backend/.venv/
+src/backend/env/
+src/backend/.env/
+src/backend/modules/__pycache__
 /.pnp
 .pnp.*
 .yarn/*
@@ -20,10 +20,10 @@ backend/modules/__pycache__
 /coverage
 
 # next.js
-frontend/.next/
-frontend/public/extracted/
-frontend/public/query/
-/out/
+src/frontend/.next/
+src/frontend/public/extracted/
+src/frontend/public/query/
+src/out/
 
 # production
 /build
@@ -31,7 +31,7 @@ frontend/public/query/
 # misc
 .DS_Store
 *.pem
-backend/__pycache__/
+src/backend/__pycache__/
 
 # debug
 npm-debug.log*
