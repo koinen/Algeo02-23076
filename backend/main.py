@@ -156,7 +156,7 @@ async def get_dataset(page: Optional[int] = 1):
         start_idx = (page-1)*LIMIT
         count = min(start_idx + LIMIT, len(os.listdir(dataset_path))) - start_idx + 1
 
-        idx = 0
+        idx = 1
         song_data = []
         with open("uploads/dataset/audio_file_names.txt", "r") as f:
             while True:
@@ -179,43 +179,43 @@ async def get_dataset(page: Optional[int] = 1):
             }
         }
         """
+        print(song_data)
         # if mapper file does not exist, return the song data as is
         if not os.path.exists("uploads/mapping.json"):
             for idx, song in enumerate(song_data):
+                print(idx)
                 song_data[idx] = {
                     "fileName": os.path.basename(song),
                     "mapping": {
                         "artist": None,
                         "title": None,
-                        "imageAbsolutePath": None
+                        "image": None
                     }
                 }
-            song_data = json.dumps(song_data)
-            return {"songs": song_data}
             
-        # Load the mapping file
-        mapper = json.load(open("uploads/mapping.json", "r"))
+        else:
+            # Load the mapping file
+            mapper = json.load(open("uploads/mapping.json", "r"))
 
-        # Example usage of mapper
-        for idx, song in enumerate(song_data):
-            # Extract the base name of the song file
-            song_name = os.path.basename(song["song"])  # Assuming each song in song_data is a dictionary with a "song" key
-            
-            if song_name in mapper:
-                # Map the fields using the mapper
-                song_data[idx] = {
-                    "fileName": song_name,
-                    "mapping": {
-                        "artist": mapper[song_name].get("artist"),
-                        "title": mapper[song_name].get("title"),
-                        "imageAbsolutePath": mapper[song_name].get("image_path")
+            # Example usage of mapper
+            for idx, song in enumerate(song_data):
+                # Extract the base name of the song file
+                song_name = os.path.basename(song[idx])  # Assuming each song in song_data is a dictionary with a "song" key
+                
+                if song_name in mapper:
+                    # Map the fields using the mapper
+                    song_data[idx] = {
+                        "fileName": song_name,
+                        "mapping": {
+                            "artist": mapper[song_name].get("artist"),
+                            "title": mapper[song_name].get("title"),
+                            "image": mapper[song_name].get("image")
+                        }
                     }
-                }
-            else:
-                print(f"Song not found in mapper: {song_name}")
-        
-        song_data = json.dumps(song_data)
-        return {"songs": song_data}
+                else:
+                    print(f"Song not found in mapper: {song_name}")
+            
+        return song_data
 
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
