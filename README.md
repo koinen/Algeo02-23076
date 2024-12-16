@@ -1,36 +1,74 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+### README: Hum Tuah!
 
-## Getting Started
+---
 
-First, run the development server:
+#### **Nama Aplikasi**
+**Hum Tuah!**
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+#### **Deskripsi**
+Hum Tuah! adalah aplikasi yang menggabungkan Music Information Retrieval (MIR) dan Image Retrieval untuk mencari lagu seperti Shazam.
+- **Music Information Retrieval**: Memanfaatkan perbandingan vektor fitur dari audio.
+- **Image Retrieval**: Menggunakan Principal Component Analysis (PCA) untuk pencarian foto album lagu berdasarkan gambar.
+---
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### **Getting Started**
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+#### **Persiapan Terminal Frontend**
+1. Akses direktori frontend:
+   ```bash
+   cd frontend
+   ```
+2. Install dependencies dengan:
+   ```bash
+   pip install -r "requirements.txt"
+   ```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+#### **Persiapan Terminal Backend**
+1. Akses direktori backend:
+   ```bash
+   cd backend
+   ```
+2. Install dependencies dengan:
+   ```bash
+   npm i
+   ```
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
+### **Cara Menjalankan**
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+#### **Backend**
+1. Di terminal backend, jalankan server dengan:
+   ```bash
+   fastapi dev
+   ```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+#### **Frontend**
+1. Di terminal frontend, jalankan aplikasi dengan:
+   ```bash
+   npm run dev
+   ```
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### **Feature**
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+#### 1. **Image Query**
+   - Dapat mencari foto album sebuah lagu dengan foto yang tersedia.
+
+#### 2. **Audio Query**
+   - Dapat mencari sebuah lagu berdasarkan cuplikan audio.
+
+---
+
+### **Dibuat Untuk**
+
+Tugas Besar 2 Mata Kuliah **Aljabar Linier dan Geometri**
+
+---
+
+### **Kelompok**
+- **Lutfi Hakim Yusra** - 13523084
+- **David Bakti Lodianto** - 13523083
+- **Nadhif Al Rozin** - 13523076
+
