@@ -21,6 +21,7 @@ backend/modules/__pycache__
 
 # next.js
 frontend/.next/
+frontend/public/extracted/
 /out/
 
 # production
