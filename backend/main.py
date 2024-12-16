@@ -239,9 +239,9 @@ async def get_dataset(page: Optional[int] = 1):
 async def get_count():
     try:
         # get the count of the number of songs
-        dataset_path = "../frontend/public/extracted"
-        count = len(os.listdir(dataset_path))
-        count = count // 12 + 1
+        song_file_names = open("uploads/audio_file_names.txt", "r")
+        count = len(song_file_names.readlines())
+        song_file_names.close()
         return count
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
