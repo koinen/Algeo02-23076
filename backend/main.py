@@ -52,11 +52,52 @@ async def upload_image(file: UploadFile = File(...)):
     mean, project_dataset, pca = openProcessedDatabaseImage()
     if mean is None or project_dataset is None or pca is None:
         return {"message": "Please upload a dataset first"}
-    else:
-        top_images, process_time = queryImage(file_path, mean, pca)
-        return {"top_images": top_images, "process_time": process_time}
     
-
+    top_images, process_time = queryImage(file_path, mean, pca)
+    
+    song_data = []
+    # if mapper file does not exist, return the image as is
+    if not os.path.exists("uploads/mapping.json"):    
+        for i in range(len(top_images)):
+            song_data.append({
+                "fileName": None,
+                "mapping": {
+                    "artist": None,
+                    "title": None,
+                    "image": top_images[i]
+                }
+            })
+    else:
+        # Load the mapping file
+        mapper = json.load(open("uploads/mapping.json", "r"))
+        """
+        Example mapper file:
+        {
+            "song_file_name": {
+                "title": "song_title",
+                "artist": "song_artist",
+                "image": "image",
+            }
+        }
+        """
+        for i in range(len(top_images)):
+            # Extract the base name of the song file
+            image_name = top_images[i]
+            # search for the image name in the mapper
+            for song_file, details in mapper.items():
+                if details.get("image") == image_name:
+                    song_data.append({
+                        "fileName": song_file,
+                        "mapping": {
+                            "artist": details.get("artist"),
+                            "title": details.get("title"),
+                            "image": details.get("image")
+                        }
+                    })
+                    break       
+        
+    return song_data
+    
 @app.post("/upload_song")
 async def upload_song(file: UploadFile = File(...)):
     # Validate file type (optional)
@@ -79,7 +120,43 @@ async def upload_song(file: UploadFile = File(...)):
         raise HTTPException(status_code=500, detail=f"Error saving file: {str(e)}")
     
     project_query = queryMIDI(file_path)
-    return {"top_songs": project_query}
+
+    song_data = []
+    # if mapper file does not exist, return the song data as is
+    if not os.path.exists("uploads/mapping.json"):
+        for i in range(len(project_query)):
+            song_data.append({
+                "fileName": os.path.basename(project_query[i]),
+                "mapping": {
+                    "artist": None,
+                    "title": None,
+                    "image": None
+                }
+            })
+        
+    else:
+        # Load the mapping file
+        mapper = json.load(open("uploads/mapping.json", "r"))
+
+        # Example usage of mapper
+        for i in range(len(project_query)):
+            # Extract the base name of the song file
+            song_name = os.path.basename(project_query[i])  # Assuming each song in song_data is a dictionary with a "song" key
+            
+            if song_name in mapper:
+                # Map the fields using the mapper
+                song_data.append({
+                    "fileName": song_name,
+                    "mapping": {
+                        "artist": mapper[song_name].get("artist"),
+                        "title": mapper[song_name].get("title"),
+                        "image": mapper[song_name].get("image")
+                    }
+                })
+            else:
+                print(f"Song not found in mapper: {song_name}")
+        
+    return song_data
 
 @app.post("/upload_dataset")
 async def upload_dataset(path: str):
@@ -172,7 +249,6 @@ async def get_dataset(page: Optional[int] = 1):
         not_found = False
         start_idx = (page-1)*LIMIT
         count = min(start_idx + LIMIT, len(os.listdir(dataset_path))) - start_idx + 1
-
         idx = 1
         song_data = []
         with open("uploads/audio_file_names.txt", "r") as f:
@@ -192,7 +268,7 @@ async def get_dataset(page: Optional[int] = 1):
             "song_file_name": {
                 "title": "song_title",
                 "artist": "song_artist",
-                "image_path": "image_path",
+                "image": "image",
             }
         }
         """
@@ -241,6 +317,7 @@ async def get_count():
         # get the count of the number of songs
         song_file_names = open("uploads/audio_file_names.txt", "r")
         count = len(song_file_names.readlines())
+        count = count // 12 + 1
         song_file_names.close()
         return count
     except Exception as e:
