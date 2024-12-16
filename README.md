@@ -16,21 +16,25 @@ Hum Tuah! adalah aplikasi yang menggabungkan Music Information Retrieval (MIR) d
 #### **Persiapan Terminal Frontend**
 1. Akses direktori frontend:
    ```bash
-   cd frontend
+   cd src/frontend
    ```
 2. Install dependencies dengan:
    ```bash
-   pip install -r "requirements.txt"
+   npm i
    ```
 
 #### **Persiapan Terminal Backend**
 1. Akses direktori backend:
    ```bash
-   cd backend
+   cd src/backend
+   ```
+2. setup python virtual environment:
+   ```bash
+   venv venv
    ```
 2. Install dependencies dengan:
    ```bash
-   npm i
+   pip install -r "requirements.txt"
    ```
 
 ---
@@ -67,7 +71,7 @@ Tugas Besar 2 Mata Kuliah **Aljabar Linier dan Geometri**
 
 ---
 
-### **Kelompok**
+### **Kelompok 17**
 - **Lutfi Hakim Yusra** - 13523084
 - **David Bakti Lodianto** - 13523083
 - **Nadhif Al Rozin** - 13523076
