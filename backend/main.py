@@ -84,13 +84,13 @@ async def upload_dataset(path: str):
             raise HTTPException(status_code=400, detail="Path is not a zip file")
 
         # clean the extracted directory
-        shutil.rmtree("uploads/dataset/extracted", ignore_errors=True)
-        os.makedirs("uploads/dataset/extracted", exist_ok=True)
+        shutil.rmtree("../frontend/public/extracted", ignore_errors=True)
+        os.makedirs("../frontend/public/extracted", exist_ok=True)
 
         # Open the zip file for extraction
         with zipfile.ZipFile(path, 'r') as zip_ref:
             # Extract all the contents into a directory
-            extract_path = "uploads/dataset/extracted"
+            extract_path = "../frontend/public/extracted"
             zip_ref.extractall(extract_path)
         
         save_path = "uploads/dataset"
@@ -187,11 +187,9 @@ async def get_dataset(page: Optional[int] = 1):
             }
         }
         """
-        print(song_data)
         # if mapper file does not exist, return the song data as is
         if not os.path.exists("uploads/mapping.json"):
             for idx, song in enumerate(song_data):
-                print(idx)
                 song_data[idx] = {
                     "fileName": os.path.basename(song),
                     "mapping": {
