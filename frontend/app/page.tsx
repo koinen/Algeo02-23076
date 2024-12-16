@@ -6,8 +6,6 @@ import SongCards from "../components/Song/SongCards";
 import Upload from "../components/Upload/Upload";
 import Humming from "@/components/Humming/Humming";
 
-const ITEMS_PER_PAGE = 12;
-
 interface SongProps {
   fileName: string;
   mapping: {
@@ -32,16 +30,20 @@ export default function HomePage() {
     try {
       // Fetch item count
       const countResponse = await axios.get("http://127.0.0.1:8000/count");
+      // alert("item count :" + countResponse.data);
       setItemCount(countResponse.data);
 
       const dataResponse = await axios.get(
         `http://localhost:8000/dataset?page=${currentPage + 1}`
       );
+      // alert("currentPage :" + (currentPage + 1));
+      // alert("data length :" + dataResponse.data.length);
       setData(dataResponse.data);
     } catch (error) {
       console.error("Error fetching data:", error);
-      alert("item count :" + itemCount);
-      alert("data length :" + data.length);
+      // alert("item count :" + itemCount);
+      // alert("data length :" + data.length);
+      setData([]);
       alert("Failed to load data. Please try again later.");
     } finally {
       setLoading(false);
@@ -68,7 +70,6 @@ export default function HomePage() {
             <div className="flex justify-center items-center h-[15vh]">
               <Pagination
                 totalItems={itemCount}
-                itemsPerPage={ITEMS_PER_PAGE}
                 currentPage={currentPage}
                 setCurrentPage={setCurrentPage}
               />
@@ -80,7 +81,7 @@ export default function HomePage() {
             <Humming handleQuery={handleQuery} fetchData={fetchData} />
           </div>
         </div>
-        <SongCards data={data} />
+        <SongCards data={data} currentPage={currentPage} />
       </div>
     </div>
   );

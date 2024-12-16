@@ -27,13 +27,12 @@ interface DisplayProps {
 const Song: React.FC<DisplayProps> = ({ song, index }) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [midiData, setMidiData] = useState<any>(null);
-
-  song.mapping = song.mapping || {
-    image: "def.png",
-    title: "Untitled",
+  const songMapping = song.mapping || {
     artist: "Anonymous",
+    title: "Untitled",
+    image: "def.png",
   };
-
+  
   useEffect(() => {
     // Load and parse MIDI file
     const loadMidi = async () => {
@@ -79,10 +78,10 @@ const Song: React.FC<DisplayProps> = ({ song, index }) => {
   };
 
   let imagePath = "";
-  if (song.mapping?.image === "def.png") {
+  if (songMapping.image === "def.png") {
     imagePath = `/album/def.png`;
   } else {
-    imagePath = `/extracted/${song.mapping?.image}`;
+    imagePath = `/extracted/${songMapping.image}`;
   }
 
   return (
@@ -90,7 +89,7 @@ const Song: React.FC<DisplayProps> = ({ song, index }) => {
       <HoverCardTrigger asChild>
         <Card className="p-4 h-fit bg-inherit">
           <CardContent className="flex flex-col justify-center items-center">
-            <p className="text-2xl text-white">{index}</p>
+            <p className="text-2xl text-white">{index + 1}</p>
             <br />
             <Image
               className="border-4 border-solid border-black"
@@ -100,7 +99,7 @@ const Song: React.FC<DisplayProps> = ({ song, index }) => {
               height={100}
             ></Image>
             <br />
-            {song.fileName.toString().endsWith(".mid") ? (
+            {song.fileName && song.fileName.toString().endsWith(".mid") ? (
               <button
                 onClick={handleMidiPlayback}
                 className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
@@ -116,7 +115,7 @@ const Song: React.FC<DisplayProps> = ({ song, index }) => {
             )}
             <br />
             <CardTitle className="w-full overflow-hidden whitespace-nowrap text-ellipsis">
-              <p className="text-3xl">{song.mapping?.title}</p>
+              <p className="text-3xl">{songMapping.title}</p>
             </CardTitle>
           </CardContent>
         </Card>
@@ -124,7 +123,7 @@ const Song: React.FC<DisplayProps> = ({ song, index }) => {
       <HoverCardContent className="w-80">
         <div className="flex justify-between space-x-4">
           <div className="space-y-1">
-            <p className="text-sm">Artist : {song.mapping?.artist}</p>
+            <p className="text-sm">Artist : {songMapping.artist}</p>
             <p className="text-sm">File Name : {song.fileName}</p>
           </div>
         </div>
