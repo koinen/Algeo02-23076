@@ -88,7 +88,6 @@ const Upload: React.FC <UploadProps> = ({ handleQuery, fetchData }) => {
             "Content-Type": "multipart/form-data",
           },
           validateStatus: () => true,
-          timeout: 10000, // Allow all status codes to prevent unintentional rejection
         }
       );
       handleQuery(response.data);

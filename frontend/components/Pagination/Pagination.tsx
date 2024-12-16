@@ -37,7 +37,6 @@ const Pagination: React.FC<PaginationProps> = ({
         {Array.from({ length: totalPages }).map((_, index) => (
           <CarouselItem
             key={index}
-            onClick={() => setCurrentPage(index)}
           />
         ))}
       </CarouselContent>
