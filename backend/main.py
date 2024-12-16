@@ -238,10 +238,9 @@ async def get_dataset(page: Optional[int] = 1):
 @app.get('/count')
 async def get_count():
     try:
-        mapper_path = "upload/mapping.json"
-        if not os.path.exists(mapper_path):
-            return {"count": 0}
-        mapper = json.load(open(mapper_path, "r"))
-        return {"count": len(mapper)}
+        # get the count of the number of songs
+        dataset_path = "../frontend/public/extracted"
+        count = len(os.listdir(dataset_path))
+        return {"count": count}
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
