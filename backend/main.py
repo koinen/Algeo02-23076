@@ -101,7 +101,7 @@ async def upload_image(file: UploadFile = File(...)):
 @app.post("/upload_song")
 async def upload_song(file: UploadFile = File(...)):
     # Validate file type (optional)
-    allowed_types = ['audio/mid, audio/wav']
+    allowed_types = ['audio/mid', 'audio/wav']
     if file.content_type not in allowed_types:
         raise HTTPException(status_code=400, detail="Invalid file type")
     print(file.content_type)
