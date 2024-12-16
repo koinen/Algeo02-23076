@@ -32,7 +32,7 @@ const Song: React.FC<DisplayProps> = ({ song, index }) => {
     title: "Untitled",
     image: "def.png",
   };
-  
+
   useEffect(() => {
     // Load and parse MIDI file
     const loadMidi = async () => {
@@ -79,7 +79,7 @@ const Song: React.FC<DisplayProps> = ({ song, index }) => {
 
   let imagePath = "";
   if (songMapping.image === "def.png") {
-    imagePath = `/album/def.png`;
+    imagePath = "/album/def.png";
   } else {
     imagePath = `/extracted/${songMapping.image}`;
   }
