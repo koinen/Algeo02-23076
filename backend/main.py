@@ -307,11 +307,7 @@ async def get_dataset(page: Optional[int] = 1):
                 else:
                     song_data[idx] = {
                         "fileName": song_name,
-                        "mapping": {
-                            "artist": None,
-                            "title": None,
-                            "image": None
-                        }
+                        "mapping": None
                     }
                     print(f"Song not found in mapper: {song_name}")
             return song_data
