@@ -5,7 +5,8 @@ import time
 
 def wav_to_midi(wav_file):
     start_time = time.time()
-    y, sr = librosa.load(f"../uploads/{wav_file}", sr=None)
+    print(f"Converting {wav_file} to MIDI...")
+    y, sr = librosa.load(wav_file, sr=None)
 
     f0, voiced_flag, _ = librosa.pyin(
         y, fmin=librosa.note_to_hz('C2'), fmax=librosa.note_to_hz('C7'), sr=sr

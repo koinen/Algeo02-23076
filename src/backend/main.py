@@ -101,16 +101,18 @@ async def upload_image(file: UploadFile = File(...)):
 @app.post("/upload_song")
 async def upload_song(file: UploadFile = File(...)):
     # Validate file type (optional)
-    allowed_types = ['audio/mid', 'audio/wav']
+    allowed_types = ['audio/mid', 'audio/wav', 'audio/x-wav']
+    print(file.filename)
     if file.content_type not in allowed_types:
         raise HTTPException(status_code=400, detail="Invalid file type")
-    print(file.content_type)
+    
+    print("niggaballs", file.filename)
     # Create directory if it doesn't exist
     os.makedirs("../frontend/public/query", exist_ok=True)
-    
+    print("niggaballs", file.filename)
     # Generate a unique filename
-    file_path = os.path.join("../frontend/public/query", "uploaded_song.mid")
-    
+    file_path = os.path.join("../frontend/public/query", "uploaded_song" + file.filename[-4:])
+    print(file_path)
     # Save the file
     try:
         with open(file_path, "wb") as buffer:

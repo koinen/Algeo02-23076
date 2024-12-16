@@ -20,6 +20,8 @@ def queryMIDI(midi_file_path, min_similarity=0.83):
     if midi_file_path.endswith(".wav"):
         wav_to_midi(midi_file_path)
         midi_file_path = "uploads/output.mid"
+        print("wav to midi done")
+    print(midi_file_path)
     project_query = processQueryMIDI(midi_file_path)
     # project_dataset = np.load("uploads/processed/project_dataset_midi.npy") ### dataset[i][j][k] = i-th song, j-th window, k-th feature
     project_dataset = np.load("uploads/processed/audio_data.npy", allow_pickle=True)
