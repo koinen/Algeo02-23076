@@ -54,7 +54,7 @@ async def upload_image(file: UploadFile = File(...)):
         return {"message": "Please upload a dataset first"}
     
     top_images, process_time = queryImage(file_path, mean, pca)
-    
+    print("process time: ", process_time)
     song_data = []
     # if mapper file does not exist, return the image as is
     if not os.path.exists("uploads/mapping.json"):    
@@ -154,6 +154,10 @@ async def upload_song(file: UploadFile = File(...)):
                     }
                 })
             else:
+                song_data.append({
+                    "fileName": song_name,
+                    "mapping": None
+                })
                 print(f"Song not found in mapper: {song_name}")
         
     return song_data
