@@ -282,6 +282,8 @@ async def get_dataset(page: Optional[int] = 1):
                         "image": None
                     }
                 }
+            print(song_data)
+            return song_data
             
         else:
             # Load the mapping file
@@ -303,9 +305,16 @@ async def get_dataset(page: Optional[int] = 1):
                         }
                     }
                 else:
+                    song_data[idx] = {
+                        "fileName": song_name,
+                        "mapping": {
+                            "artist": None,
+                            "title": None,
+                            "image": None
+                        }
+                    }
                     print(f"Song not found in mapper: {song_name}")
-            
-        return song_data
+            return song_data
 
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
