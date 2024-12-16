@@ -8,22 +8,48 @@ import Humming from "@/components/Humming/Humming";
 
 const ITEMS_PER_PAGE = 12;
 
+interface SongProps {
+  fileName: string;
+  mapping: {
+    image?: string;
+    title?: string;
+    artist?: string;
+  };
+}
+
 export default function HomePage() {
   const [currentPage, setCurrentPage] = useState(0);
   const [itemCount, setItemCount] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [data, setData] = useState<SongProps[]>([]);
+
   useEffect(() => {
     const fetchData = async () => {
+      setLoading(true);
       try {
-        const response = await axios.get("http://127.0.0.1:8000/count/");
-        setItemCount(response.data);
+        // Fetch item count
+        const countResponse = await axios.get("http://127.0.0.1:8000/count/");
+        setItemCount(countResponse.data);
+
+        // Fetch data for the current page
+        const dataResponse = await axios.get(
+          `http://localhost:8000/dataset?page=${currentPage + 1}`
+        );
+        setData(dataResponse.data);
       } catch (error) {
-        setItemCount(20); // Placeholder for itemCount
-        alert("Failed to load page count");
+        console.error("Error fetching data:", error);
+        alert("Failed to load data. Please try again later.");
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchData();
-  }, []);
+  }, [currentPage]); // Add currentPage to the dependency array
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div
@@ -49,7 +75,11 @@ export default function HomePage() {
             <Humming />
           </div>
         </div>
-        <SongCards itemsPerPage={ITEMS_PER_PAGE} currentPage={currentPage} />
+        <SongCards
+          itemsPerPage={ITEMS_PER_PAGE}
+          currentPage={currentPage}
+          data={data}
+        />
       </div>
     </div>
   );

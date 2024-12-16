@@ -1,0 +1,27 @@
+{
+  "audio1": {
+    "artist": "The Beatles",
+    "title": "Yellow Submarine",
+    "albumImage": "https://upload.wikimedia.org/wikipedia/en/4/47/Yellow_Submarine_album_cover.jpg"
+  },
+  "audio2": {
+    "artist": "The Beatles",
+    "title": "Hey Jude",
+    "albumImage": "https://upload.wikimedia.org/wikipedia/en/4/47/Yellow_Submarine_album_cover.jpg"
+  },
+  "audio3": {
+    "artist": "The Beatles",
+    "title": "Let It Be",
+    "albumImage": "https://upload.wikimedia.org/wikipedia/en/4/47/Yellow_Submarine_album_cover.jpg"
+  },
+  "audio4": {
+    "artist": "The Beatles",
+    "title": "Help!",
+    "albumImage": "https://upload.wikimedia.org/wikipedia/en/4/47/Yellow_Submarine_album_cover.jpg"
+  },
+  "audio5": {
+    "artist": "The Beatles",
+    "title": "Yesterday",
+    "albumImage": "https://upload.wikimedia.org/wikipedia/en/4/47/Yellow_Submarine_album_cover.jpg"
+  }
+}

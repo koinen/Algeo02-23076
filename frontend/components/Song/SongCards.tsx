@@ -2,17 +2,16 @@
 import React from "react";
 import Song from "./Song";
 import NotFound from "../NotFound/NotFound";
-import axios from "axios";
-import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { SongProps } from "./Song";
 
 interface SongCardsProps {
   itemsPerPage: number;
   currentPage: number;
+  data: SongProps[];
 }
 
-const SongCards: React.FC<SongCardsProps> = ({ itemsPerPage, currentPage }) => {
+const SongCards: React.FC<SongCardsProps> = ({ itemsPerPage, currentPage, data }) => {
   // const [data, setData] = useState<SongProps[]>([]);
   // const [loading, setLoading] = useState<boolean>(true);
 
@@ -39,21 +38,18 @@ const SongCards: React.FC<SongCardsProps> = ({ itemsPerPage, currentPage }) => {
   //   fetchData();
   // }, [currentPage]);
 
-  const handleTestClick = () => {
-    const placeholder = Array.from({ length: itemsPerPage }, (_, index) => ({
-      fileName: `Lagu ${index + 1}`,
-      mapping: {
-        image: "def.png",
-        title: "Untitled",
-        artist: "Anonymous",
-      },
-    }));
-    setData(placeholder);
-  };
+  // const handleTestClick = () => {
+  //   const placeholder = Array.from({ length: itemsPerPage }, (_, index) => ({
+  //     fileName: `Lagu ${index + 1}`,
+  //     mapping: {
+  //       image: "def.png",
+  //       title: "Untitled",
+  //       artist: "Anonymous",
+  //     },
+  //   }));
+  //   setData(placeholder);
+  // };
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
 
   return (
     <div className="w-[80%] h-[86.5vh] p-3 overflow-y-auto">
@@ -75,9 +71,6 @@ const SongCards: React.FC<SongCardsProps> = ({ itemsPerPage, currentPage }) => {
       ) : (
         <div className="flex justify-center items-center h-full flex-col gap-3">
           <NotFound />
-          <Button variant="outline" onClick={handleTestClick}>
-            Click This to Test
-          </Button>
         </div>
       )}
     </div>
