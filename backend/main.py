@@ -235,5 +235,13 @@ async def get_dataset(page: Optional[int] = 1):
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
     
-# @app.get('/count')
-# async def get_count():
+@app.get('/count')
+async def get_count():
+    try:
+        mapper_path = "upload/mapping.json"
+        if not os.path.exists(mapper_path):
+            return {"count": 0}
+        mapper = json.load(open(mapper_path, "r"))
+        return {"count": len(mapper)}
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
