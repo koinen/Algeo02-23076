@@ -210,9 +210,8 @@ async def upload_dataset(path: str):
             f.write("\n".join(image_file_names))
         with open(os.path.join(save_path, "audio_file_names.txt"), "w") as f:
             f.write("\n".join(audio_file_names))
-        
-        processDatabaseImage(image_data_center, 500)
-
+        if len(image_data_center) > 0:
+            processDatabaseImage(image_data_center, 500)
         return {"message": f"Dataset successfully extracted to {save_path}"}
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
